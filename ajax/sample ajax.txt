@@ -1,0 +1,11 @@
+$.ajax({
+	url: "ajax/login.php",
+	type: "POST",
+	data: form_data,
+	contentType: false,
+	cache: false,
+	processData:false,
+	success: function(data){
+	
+	}
+});	

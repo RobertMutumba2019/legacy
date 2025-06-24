@@ -1,0 +1,19 @@
+# Do not remove this line, otherwise mod_rewrite rules will stop working
+
+#Options +MultiViews
+#RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^([^\.]+)$ $1.php [NC,L]
+#RewriteRule ^projectz$ index.php?ce=projects&id=$1 [NC]
+#RewriteRule ^project_preview/([0-9]+)$ index.php?ce=project_preview&id=$1 [NC]
+#RewriteRule ^category/([0-9]+)$ index.php?ce=category&section=$1 [NC]
+
+
+Options +Indexes
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+RewriteRule ^admin/([^\.]+)$ admin/index.php?action=$1 [NC,L]
+RewriteRule ^admin/$ admin/index.php [NC,L]
+RewriteRule ^([^\.]+)$ index.php?action=$1 [NC,L]
