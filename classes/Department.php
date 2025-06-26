@@ -1,22 +1,24 @@
 <?php
+include_once __DIR__ . "/Exporter.inc";
 Class Department extends BeforeAndAfter{
 
-	public $page = "DEPARTMENTS";
+	public $page2;
+    public $page = "DEPARTMENTS";
 
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-departments"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-departments") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-department"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-department") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 	
 	public function deleteDepartmentAction(){
@@ -31,7 +33,8 @@ Class Department extends BeforeAndAfter{
 	
 	public static function getLinks(){
 		$page = "DEPARTMENTS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Department", 
 				"link_address"=>"department/add-department",
@@ -54,8 +57,6 @@ Class Department extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function importDepartmentsAction(){
@@ -76,12 +77,12 @@ Class Department extends BeforeAndAfter{
 					//echo $col_1;
 					if($count == 1){
 						//echo "$col_1 is equal to $valid_name";
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
 
@@ -96,7 +97,7 @@ Class Department extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -158,7 +159,7 @@ Class Department extends BeforeAndAfter{
 				$errors[]="department($department) already exists";
 			}
 				
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->insert("department",["dept_date_added"=>$time, "dept_name"=>$department,"dept_added_by"=>$user, "dept_office_id"=>0, "dept_status"=>1]);
 				
 				if($x){
@@ -242,6 +243,9 @@ Class Department extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+			if(is_array($select)){
+
+			
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -263,10 +267,12 @@ Class Department extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','department/edit-department/'.$dept_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page, 'D'))
-							echo $this->action('delete','department/delete-department/'.$dept_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','department/edit-department/'.$dept_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page, 'D')) {
+                            echo $this->action('delete','department/delete-department/'.$dept_id, 'Delete');
+                        }
 						echo '</td>';
 					}
 					echo '</tr>';
@@ -280,6 +286,8 @@ Class Department extends BeforeAndAfter{
 						$xyz
 					); 
 
+
+				}
 				}
 				echo '</tbody>';
 				
@@ -305,8 +313,10 @@ Class Department extends BeforeAndAfter{
 		$id = portion(3);
 		$db = new Db();
 		$select = $db->select("SELECT * FROM department WHERE dept_id ='$id'");
-		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 		extract($select[0]);
+		}
 		
 		$department = $dept_name;
 		if(isset($_POST['submit'])){
@@ -328,7 +338,7 @@ Class Department extends BeforeAndAfter{
 				$errors[]="department($department) already exists";
 			}
 				
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->update("department", ["dept_name"=>$department,  "dept_status"=>$status], ["dept_id"=>$id]);
 			
 				if(empty($db->error())){
@@ -367,15 +377,17 @@ Class Department extends BeforeAndAfter{
 										<?php
 										echo '<select name="status">';
 
-										if($dept_status == 0)
-											echo '<option value="0" selected="selected">'.$this->show2.'</option>';
-										else
-											echo '<option value="0">'.$this->show2.'</option>';
+										if ($dept_status == 0) {
+                                            echo '<option value="0" selected="selected">'.$this->show2.'</option>';
+                                        } else {
+                                            echo '<option value="0">'.$this->show2.'</option>';
+                                        }
 
-										if($dept_status == 1)
-											echo '<option value="1" selected="selected">'.$this->show1.'</option>';
-										else
-											echo '<option value="1">'.$this->show1.'</option>';
+										if ($dept_status == 1) {
+                                            echo '<option value="1" selected="selected">'.$this->show1.'</option>';
+                                        } else {
+                                            echo '<option value="1">'.$this->show1.'</option>';
+                                        }
 										echo '</select>';
 										?>
 									</div>
@@ -411,7 +423,7 @@ Class Department extends BeforeAndAfter{
 			if($this->isThere("section", ["section_name"=>$section])){
 				$errors[]="section($section) already exists";
 			}
-			if(empty($errors)){
+			if($errors === []){
 		
 				$x = $db->insert("section",["section_date_added"=>$time,"section_dept_id"=>$department_id, "section_name"=>$section,"section_added_by"=>$user, "section_status"=>1]);
 				echo $db->error();
@@ -452,12 +464,18 @@ Class Department extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_status = 1 ORDER BY dept_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
 												extract($row);
-												if($dept_id == $department_id)
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($dept_id == $department_id) {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                            
+												}
+											}
 											}
 											?>
 										</select>
@@ -477,7 +495,9 @@ Class Department extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from section WHERE section_id='$id'");
-		extract($select[0][0]);
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
+		extract($select[0][0]);}
 		if(isset($_POST['submit'])){
 		
 			$section = $_POST['section_name'];
@@ -497,7 +517,7 @@ Class Department extends BeforeAndAfter{
 			if($this->isThereEdit("section", ["section_name"=>$section,"section_id"=>$id])){
 				$errors[]="section($section) already exists";
 			}
-			if(empty($errors)){
+			if($errors === []){
 		
 				$x = $db->update("section",["section_date_added"=>$time,"section_dept_id"=>$department_id, "section_name"=>$section, "section_added_by"=>$user, "section_status"=>$status ],["section_id"=>$id]);
 				echo $db->error();
@@ -538,12 +558,17 @@ Class Department extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_status = 1 ORDER BY dept_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
 												extract($row);
-												if($section_dept_id == $dept_id)
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($section_dept_id == $dept_id) {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
+											}
 											}
 											?>
 										</select>
@@ -556,15 +581,17 @@ Class Department extends BeforeAndAfter{
 										<?php
 										echo '<select name="status">';
 
-										if($section_status == 0)
-											echo '<option value="0" selected="selected">'.$this->show2.'</option>';
-										else
-											echo '<option value="0">'.$this->show2.'</option>';
+										if ($section_status == 0) {
+                                            echo '<option value="0" selected="selected">'.$this->show2.'</option>';
+                                        } else {
+                                            echo '<option value="0">'.$this->show2.'</option>';
+                                        }
 
-										if($section_status == 1)
-											echo '<option value="1" selected="selected">'.$this->show1.'</option>';
-										else
-											echo '<option value="1">'.$this->show1.'</option>';
+										if ($section_status == 1) {
+                                            echo '<option value="1" selected="selected">'.$this->show1.'</option>';
+                                        } else {
+                                            echo '<option value="1">'.$this->show1.'</option>';
+                                        }
 										echo '</select>';
 										?>
 									</div>
@@ -621,6 +648,8 @@ Class Department extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -640,10 +669,12 @@ Class Department extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page2, 'E') || $access->sectionAccess(user_id(), $this->page2, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page2, 'E'))
-							echo $this->action('edit','department/edit-section/'.$section_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page2, 'D'))
-							echo $this->action('delete','department/delete-section/'.$section_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page2, 'E')) {
+                            echo $this->action('edit','department/edit-section/'.$section_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page2, 'D')) {
+                            echo $this->action('delete','department/delete-section/'.$section_id, 'Delete');
+                        }
 						echo '</td>';
 					}
 					echo '</tr>';
@@ -659,7 +690,7 @@ Class Department extends BeforeAndAfter{
 					
 					); 
 					
-					/////////////////////////////////////////////////////////////////////////////
+				}	/////////////////////////////////////////////////////////////////////////////
 					
 				}
 				echo '</tbody>';

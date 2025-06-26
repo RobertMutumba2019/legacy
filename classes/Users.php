@@ -9,19 +9,19 @@ class Users extends BeforeAndAfter{
 		$page = "USERS";
 		//$page2 = "HODS";
 
-		if(portion(2)=="add-user"){
-			if(!$access->sectionAccess(user_id(), $page, 'A')){
+		if (portion(2)=="add-user") {
+            if(!$access->sectionAccess(user_id(), $page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url());
 			}
-		}else if(portion(2) == "all-users"){
-			if(!$access->sectionAccess(user_id(), $page, 'V')){
+        } elseif (portion(2) == "all-users") {
+            if(!$access->sectionAccess(user_id(), $page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url());
 			}
-		}else if(portion(2) == "changed-password"||portion(2) == "logout"){
-			//allowed
-		}
+        } elseif (portion(2) == "changed-password"||portion(2) == "logout") {
+            //allowed
+        }
 
 		/*else{
 			if(!$access->sectionAccess(user_id(), $page2, 'A')){
@@ -86,7 +86,7 @@ class Users extends BeforeAndAfter{
 
 		
 
-		$update = $db->update("sysuser", ["user_last_logged_in"=>time(), "user_online"=>0], ["user_id"=>user_id()]);
+		$db->update("sysuser", ["user_last_logged_in"=>time(), "user_online"=>0], ["user_id"=>user_id()]);
 	}
 	
 	public function deleteHodAction(){
@@ -100,7 +100,7 @@ class Users extends BeforeAndAfter{
 	}
 		
 	public function AllUsersAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -219,7 +219,7 @@ class Users extends BeforeAndAfter{
 		$nn = $n->select("SELECT * FROM sysuser WHERE user_id = '$id'");
 		extract($nn[0]);
 
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<h3>User Account Details</h3>
@@ -325,7 +325,7 @@ class Users extends BeforeAndAfter{
 
 				$db = new Db();
 		$time = time();
-		$user = user_id();
+		user_id();
 		$errors = array();
 		if (isset($_POST['uploaddata'])) { 
 			$filename=$_FILES["uploadFile"]["tmp_name"];
@@ -347,36 +347,36 @@ class Users extends BeforeAndAfter{
 					 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
-						if(empty($col_2)){
+						if($col_2 === '' || $col_2 === '0'){
 							//$errors[] = "Cell <b>B".$count."</b> should not be empty";
 						}
-						if(empty($col_3)){
+						if($col_3 === '' || $col_3 === '0'){
 							$errors[] = "Cell <b>C".$count."</b> should not be empty";
 						}
-						if(empty($col_4)){
+						if($col_4 === '' || $col_4 === '0'){
 							$errors[] = "Cell <b>D".$count."</b> should not be empty";
 						}
-						if(empty($col_5)){
+						if($col_5 === '' || $col_5 === '0'){
 							//$errors[] = "Cell <b>E".$count."</b> should not be empty";
 						}
-						if(empty($col_6)){
+						if($col_6 === '' || $col_6 === '0'){
 							$errors[] = "Cell <b>E".$count."</b> should not be empty";
 						}
-						if(empty($col_7)){
+						if($col_7 === '' || $col_7 === '0'){
 							$errors[] = "Cell <b>F".$count."</b> should not be empty";
 						}
-						if(empty($col_8)){
+						if($col_8 === '' || $col_8 === '0'){
 							$errors[] = "Cell <b>G".$count."</b> should not be empty";
 						}
-						if(empty($col_9)){
+						if($col_9 === '' || $col_9 === '0'){
 							$errors[] = "Cell <b>H".$count."</b> should not be empty";
 						}
 						
@@ -421,7 +421,7 @@ class Users extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -449,8 +449,9 @@ class Users extends BeforeAndAfter{
 
 					$name = explode(' ',ucwords(strtolower($col_1)));
 
-					if($col_5=="#N/A"||$col_5=="")
-						$col_5 = implode('.', $name)."@centenarybank.co.ug";
+					if ($col_5 === "#N/A"||$col_5 === "") {
+                        $col_5 = implode('.', $name)."@centenarybank.co.ug";
+                    }
 					
 					$pf = "";
 					foreach($name as $l){
@@ -565,7 +566,7 @@ class Users extends BeforeAndAfter{
 			
 			$errors = array();
 
-			if(empty($check_number)){
+			if($check_number === '' || $check_number === '0'){
 				$errors[] = "Please Enter PF number";
 			}
 			
@@ -575,10 +576,10 @@ class Users extends BeforeAndAfter{
 			// if(empty($user_designation)){
 			// 	$errors[] = "Select User Role";
 			// }
-			if(empty($email)){
+			if($email === '' || $email === '0'){
 				$errors[] = "Please Enter your Email Address";
 			}
-			if(empty($user_role)){
+			if($user_role === '' || $user_role === '0'){
 				$errors[] = "Please Select User Role";
 			}
 			// if(empty($telephone)){
@@ -589,7 +590,7 @@ class Users extends BeforeAndAfter{
 			// 	$errors[] = "select branch";
 			// }
 
-			if(empty($username)){
+			if($username === '' || $username === '0'){
 				$errors[] = "Enter Username";
 			}
 					
@@ -603,7 +604,7 @@ class Users extends BeforeAndAfter{
 			}
 				
 
-			if(empty($errors)){
+			if($errors === []){
 				$password = Feedback::password_generator();
 
 				$insert = $db->insert("sysuser", [
@@ -751,15 +752,17 @@ class Users extends BeforeAndAfter{
 									<div class="form-line">
 										<select name="user_gender" id="user_gender">
 											<?php 
-											if($user_gender ==1)
-												echo '<option selected="selected" value="1">Male</option>';
-											else
-												echo '<option value="1">Male</option>';
+											if ($user_gender ==1) {
+                                                echo '<option selected="selected" value="1">Male</option>';
+                                            } else {
+                                                echo '<option value="1">Male</option>';
+                                            }
 
-											if($user_gender ==0)
-												echo '<option selected="selected" value="0">Female</option>';
-											else
-												echo '<option value="0">Female</option>';
+											if ($user_gender ==0) {
+                                                echo '<option selected="selected" value="0">Female</option>';
+                                            } else {
+                                                echo '<option value="0">Female</option>';
+                                            }
 											?>
 										</select>
 									</div>
@@ -795,10 +798,11 @@ class Users extends BeforeAndAfter{
 											$select = $db->select("SELECT branch_id, branch_name FROM branch WHERE branch_status = 1 ORDER BY branch_name ASC");
 											foreach($select as $row){
 												extract($row);
-												if($branch_id == $user_branch_id)
-													echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
-												else
-													echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'">'.$branch_name.'</option>';
+												if ($branch_id == $user_branch_id) {
+                                                    echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'">'.$branch_name.'</option>';
+                                                }
 											}
 											?>
 										</select>
@@ -817,10 +821,11 @@ class Users extends BeforeAndAfter{
 													$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_name IS NOT NULL AND dept_status = 1 ORDER BY dept_name ASC");
 													foreach($select as $row){
 														extract($row);
-														if($dept_id == $user_department_id)
-															echo '<option data-subtext="" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-														else
-															echo '<option data-subtext="" value="'.$dept_id.'">'.$dept_name.'</option>';
+														if ($dept_id == $user_department_id) {
+                                                            echo '<option data-subtext="" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                        } else {
+                                                            echo '<option data-subtext="" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                        }
 													}
 													?>
 												</select>
@@ -890,16 +895,18 @@ class Users extends BeforeAndAfter{
 				echo '<td>B'.$j.'</td>';
 				echo '<td>0788229210</td>';
 				echo '<td>josemusiitwa@gmail.com</td>';
-				if($i==2)
-				echo '<td>Female</td>';
-				else
-				echo '<td>Male</td>';
+				if ($i==2) {
+                    echo '<td>Female</td>';
+                } else {
+                    echo '<td>Male</td>';
+                }
 
 				echo '<td>Branch '.$j.'</td>';
-				if($i==1)
-				echo '<td>Branch/Dempartment Approver</td>';
-				else
-				echo '<td>User</td>';
+				if ($i==1) {
+                    echo '<td>Branch/Dempartment Approver</td>';
+                } else {
+                    echo '<td>User</td>';
+                }
 				echo '</tr>';
 			}
 		}
@@ -913,16 +920,11 @@ class Users extends BeforeAndAfter{
 		$id = $this->id;
 		$db = new Db();
 		$select = $db->select("SELECT * FROM sysuser WHERE user_id = '$id'");
-		extract($select[0]);
-
-		$check_number = $check_number;	
+		extract($select[0]);	
 		$surname = $user_surname;			
 		$othername = $user_othername;				
 		$email = $user_email;				
 		$telephone = $user_telephone;
-
-		$user_department_id = $user_department_id;	
-		$user_branch_id = $user_branch_id;
 
 		
 		//$user_gender = addslashes($_POST['user_gender']);
@@ -957,23 +959,23 @@ class Users extends BeforeAndAfter{
 			
 			$errors = array();
 
-			if(empty($check_number)){
+			if($check_number === '' || $check_number === '0'){
 				$errors[] = "Please Enter PF number";
 			}
 			
 			// if(empty($othername)){
 			// 	$errors[] = "Please fill your othername";
 			// }
-			if(empty($email)){
+			if($email === '' || $email === '0'){
 				$errors[] = "Please Enter your Email Address";
 			}
-			if(empty($user_role)){
+			if($user_role === '' || $user_role === '0'){
 				$errors[] = "Please Select User Role";
 			}
 			
 			
 
-			if(empty($username)){
+			if($username === '' || $username === '0'){
 				$errors[] = "Enter Username";
 			}
 					
@@ -987,7 +989,7 @@ class Users extends BeforeAndAfter{
 			}
 				
 
-			if(empty($errors)){
+			if($errors === []){
 				$password = Feedback::password_generator();
 
 				if($change_password){
@@ -1112,16 +1114,20 @@ class Users extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="status" name="status">
 											<?php 
-											if(empty($status)) $status = 1;
-											if($user_active == 0)
-												echo '<option selected="selected" value="0">Lock</option>';
-											else
-												echo '<option value="0">Lock</option>';
+											if (empty($status)) {
+                                                $status = 1;
+                                            }
+											if ($user_active == 0) {
+                                                echo '<option selected="selected" value="0">Lock</option>';
+                                            } else {
+                                                echo '<option value="0">Lock</option>';
+                                            }
 
-											if($user_active == 1)
-												echo '<option selected="selected" value="1">Active</option>';
-											else
-												echo '<option value="1">Active</option>';
+											if ($user_active == 1) {
+                                                echo '<option selected="selected" value="1">Active</option>';
+                                            } else {
+                                                echo '<option value="1">Active</option>';
+                                            }
 											?>
 										</select>
 									</div>
@@ -1133,15 +1139,17 @@ class Users extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="change_password" name="change_password">
 											<?php 
-											if($change_password ==0)
-												echo '<option selected="selected" value="0">No, Retain Password</option>';
-											else
-												echo '<option value="0">No, Retain Password</option>';
+											if ($change_password ==0) {
+                                                echo '<option selected="selected" value="0">No, Retain Password</option>';
+                                            } else {
+                                                echo '<option value="0">No, Retain Password</option>';
+                                            }
 
-											if($change_password ==1)
-												echo '<option selected="selected" value="1">Yes, Change Password</option>';
-											else
-												echo '<option value="1">Yes, Change Password</option>';
+											if ($change_password ==1) {
+                                                echo '<option selected="selected" value="1">Yes, Change Password</option>';
+                                            } else {
+                                                echo '<option value="1">Yes, Change Password</option>';
+                                            }
 											?>
 										</select>
 									</div>
@@ -1186,15 +1194,17 @@ class Users extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="user_gender" name="user_gender">
 											<?php 
-											if($user_gender ==1)
-												echo '<option selected="selected" value="1">Male</option>';
-											else
-												echo '<option value="1">Male</option>';
+											if ($user_gender ==1) {
+                                                echo '<option selected="selected" value="1">Male</option>';
+                                            } else {
+                                                echo '<option value="1">Male</option>';
+                                            }
 
-											if($user_gender ==0)
-												echo '<option selected="selected" value="0">Female</option>';
-											else
-												echo '<option value="0">Female</option>';
+											if ($user_gender ==0) {
+                                                echo '<option selected="selected" value="0">Female</option>';
+                                            } else {
+                                                echo '<option value="0">Female</option>';
+                                            }
 											?>
 										</select>
 									</div>
@@ -1230,10 +1240,11 @@ class Users extends BeforeAndAfter{
 											$select = $db->select("SELECT branch_id, branch_name FROM branch WHERE branch_status = 1 ORDER BY branch_name ASC");
 											foreach($select as $row){
 												extract($row);
-												if($branch_id == $user_branch_id)
-													echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
-												else
-													echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'">'.$branch_name.'</option>';
+												if ($branch_id == $user_branch_id) {
+                                                    echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'">'.$branch_name.'</option>';
+                                                }
 											}
 											?>
 										</select>
@@ -1252,10 +1263,11 @@ class Users extends BeforeAndAfter{
 													$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_name IS NOT NULL AND dept_status = 1 ORDER BY dept_name ASC");
 													foreach($select as $row){
 														extract($row);
-														if($dept_id == $user_department_id)
-															echo '<option data-subtext="" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-														else
-															echo '<option data-subtext="" value="'.$dept_id.'">'.$dept_name.'</option>';
+														if ($dept_id == $user_department_id) {
+                                                            echo '<option data-subtext="" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                        } else {
+                                                            echo '<option data-subtext="" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                        }
 													}
 													?>
 												</select>
@@ -1331,8 +1343,8 @@ class Users extends BeforeAndAfter{
 			if($this->isThere("hod", ["hod_user_id"=>$hod_user_id])){
 				$errors[] = "name ()$hod_user_id already exists";
 			}
-			if(empty($errors)){
-				$x = $db->insert("hod",["hod_date_added"=>$time,"hod_dept_id"=>$department_id, "hod_user_id"=>$hod_user_id,"hod_added_by"=>$user,"hod_date_added"=>$time]);
+			if($errors === []){
+				$x = $db->insert("hod",["hod_dept_id"=>$department_id, "hod_user_id"=>$hod_user_id,"hod_added_by"=>$user,"hod_date_added"=>$time]);
 				echo $db->error();
 				if($x){
 					FeedBack::success();
@@ -1379,10 +1391,11 @@ class Users extends BeforeAndAfter{
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($dept_id, $dept_ids)){
-													if($dept_id == $department_id)
-														echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-													else
-														echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+													if ($dept_id == $department_id) {
+                                                        echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                    }
 												}
 											}
 											?>
@@ -1401,10 +1414,11 @@ class Users extends BeforeAndAfter{
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($user_id, $user_ids)){
-													if($hod_user_id == $user_id)
-														echo '<option value="'.$user_id.'" selected="selected">'.$user_surname.' '.$user_othername.'</option>';
-													else
-														echo '<option value="'.$user_id.'">'.$user_surname.' '.$user_othername.' </option>';
+													if ($hod_user_id == $user_id) {
+                                                        echo '<option value="'.$user_id.'" selected="selected">'.$user_surname.' '.$user_othername.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$user_id.'">'.$user_surname.' '.$user_othername.' </option>';
+                                                    }
 												}
 											}
 											?>
@@ -1450,8 +1464,8 @@ class Users extends BeforeAndAfter{
 			if($this->isThere("hod", ["hod_user_id"=>$hod_user_id])){
 				$errors[] = "name ()$hod_user_id already exists";
 			}
-			if(empty($errors)){
-				$x = $db->update("hod",["hod_date_added"=>$time,"hod_dept_id"=>$department_id, "hod_user_id"=>$hod_user_id,"hod_added_by"=>$user,"hod_date_added"=>$time], ["hod_id"=>$id]);
+			if($errors === []){
+				$x = $db->update("hod",["hod_dept_id"=>$department_id, "hod_user_id"=>$hod_user_id,"hod_added_by"=>$user,"hod_date_added"=>$time], ["hod_id"=>$id]);
 				echo $db->error();
 				if($x){
 					FeedBack::success();
@@ -1498,10 +1512,11 @@ class Users extends BeforeAndAfter{
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($dept_id, $dept_ids)){
-													if($dept_id == $department_id)
-														echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-													else
-														echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+													if ($dept_id == $department_id) {
+                                                        echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                    }
 												}
 											}
 											?>
@@ -1520,10 +1535,11 @@ class Users extends BeforeAndAfter{
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($user_id, $user_ids)){
-													if($hod_user_id == $user_id)
-														echo '<option value="'.$user_id.'" selected="selected">'.$user_surname.' '.$user_othername.'</option>';
-													else
-														echo '<option value="'.$user_id.'">'.$user_surname.' '.$user_othername.' </option>';
+													if ($hod_user_id == $user_id) {
+                                                        echo '<option value="'.$user_id.'" selected="selected">'.$user_surname.' '.$user_othername.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$user_id.'">'.$user_surname.' '.$user_othername.' </option>';
+                                                    }
 												}
 											}
 											?>
@@ -1646,10 +1662,11 @@ class Users extends BeforeAndAfter{
 	}
 
 	public function gender($sex){
-		if($sex)
-			return "Male";
-		else
-			return "Female";
+		if ($sex) {
+            return "Male";
+        } else {
+            return "Female";
+        }
 	}
 
 }

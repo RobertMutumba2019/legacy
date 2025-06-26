@@ -8,7 +8,7 @@ class AuditTrail extends BeforeAndAfter{
 
 	public function __construct(){
 		new AccessRights();
-		//$access->pageAccess(user_id(), $this->page, 'V');
+		
 	}
 
 	public static function getLinks(){
@@ -85,21 +85,7 @@ class AuditTrail extends BeforeAndAfter{
 		$browser = $_SERVER['HTTP_USER_AGENT'];
 		/*
 		if(strpos($browser, 'MSIE') !== false){
-			$browser = "Internet Explorer";
-		}elseif(strpos($browser, 'Trident') !== false){
-			$browser = "Internet Explorer";
-		}elseif(strpos($browser, 'Firefox') !== false){
-			$browser = "Mozilla Firefox";
-		}elseif(strpos($browser, 'Chrome') !== false){
-			$browser = "Google Chrome";
-		}elseif(strpos($browser, 'Opera Mini') !== false){
-			$browser = "Opera Mini";
-		}elseif(strpos($browser, 'Opera') !== false){
-			$browser = "Opera";
-		}elseif(strpos($browser, 'Safari') !== false){
-			$browser = "Safari";
-		}else{
-			$browser = "Other";
+		
 		}
 			*/
 		$description = str_replace("'", "\'", addslashes(strip_tags(($description))));
@@ -256,7 +242,7 @@ class AuditTrail extends BeforeAndAfter{
 
 		$no = 1;
 		$db_values = []; //added the array by Mutumba Robert
-		if (is_array($select) && !empty($select)) {
+		if (is_array($select) && $select !== []) {
 		foreach($select as $row){
 			extract($row);
 			echo '<tr>';

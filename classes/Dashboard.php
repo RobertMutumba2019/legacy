@@ -4,11 +4,9 @@ class Dashboard extends BeforeAndAfter{
 	
 	public function getLinks(){
 		
-		$links = array(
+		return array(
 			array()
 		);
-		
-		return $links;
 	}
 	
 	public function index(){    

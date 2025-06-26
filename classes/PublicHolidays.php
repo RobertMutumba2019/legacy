@@ -67,7 +67,7 @@ Class PublicHolidays{
 
 	public function getDay($time){
 		//check if time with days
-		$day_month_now = date('d/m', $time);
+		date('d/m', $time);
 		foreach($this->days as $day=>$details){
 			$month = current(explode('/', $day));
 			$from = $details['from'];

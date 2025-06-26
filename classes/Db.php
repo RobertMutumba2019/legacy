@@ -177,7 +177,9 @@ class Db {
 		$this->connect();
 		//return $connection->lastInsertId();
 		$row = $this->select("SELECT MAX($column) AS max FROM $table");
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		return $row[0][0]['max'];
+		}
 	}
 	public function trans($type){
 		$connection = $this->connect();

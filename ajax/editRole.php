@@ -1,6 +1,6 @@
 <?php
 error_reporting(null);
-include(__DIR__ . "/../classes/init.inc");	
+include_once __DIR__ . "/classes/init.php";	
 $t = new BeforeAndAfter();
 			$id=portion(3);
 			$designation = $_POST['designation'];

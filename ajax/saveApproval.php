@@ -1,6 +1,7 @@
 <?php
 ///error_reporting(null);
-include(__DIR__ . "/../classes/init.inc");	
+include_once __DIR__ . "/classes/init.php";		
+include_once __DIR__ . "/classes/Db.php";		
 $system_name="CENTENARY";	
 
 $reqId = $_POST['reqId'];
@@ -15,8 +16,10 @@ $req_id = $reqId;
 $req = 1;
 $db = new Db();
 $select = $db->select("SELECT * FROM requisition WHERE req_id = '$req_id'");
-if($db->num_rows){
+if($db->num_rows()){
+  if (is_array($select) && isset($select[0]) && is_array($select[0])) {
   extract($select[0]);
+  }
 }
 
 if ($status=="Rejected") {
@@ -35,7 +38,9 @@ if ($status=="Rejected") {
     //==============================
     $select = $db->select("SELECT * FROM requisition WHERE req_id = '$req_id'");
     if($db->num_rows()){
+      if (is_array($select) && isset($select[0]) && is_array($select[0])) {
       extract($select[0]);
+      }
     }
     //email notification 
     $next_name = $t->ruf($req_added_by, "user_othername");
@@ -95,11 +100,16 @@ if ($status=="Rejected") {
   
   $db = new Db();
 $select = $db->select("SELECT * FROM requisition WHERE req_id = '$req_id'");
+if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 extract($select[0]);
+}
 
 $select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
       $no = 1;
       $total = 0;
+      if(is_array($select)){
+
+      
       foreach($select as $row){
   extract($row);
   $list[]=array(
@@ -111,6 +121,7 @@ $select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' 
     $t->rgf("approval_matrix", $req_division, "ap_id", "ap_code"),
     $req_number,
   );
+}
 }
 
 

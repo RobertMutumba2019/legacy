@@ -5,7 +5,7 @@ error_reporting(null);
 
 //include "../classes/Db.php";
 //include "../classes/Feedback.php";		
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";	
 //include "../classes/AuditTrail.inc";	
 
 $t = new BeforeAndAfter();
@@ -52,7 +52,9 @@ if($errors === []){
 	$select = $db->select("SELECT * FROM sysuser WHERE user_id = $user_id AND user_password = '$ep';");
 
 	if($db->num_rows()){
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+		}
 		//$db = new Db();
 		$x = new Db();
 		if(empty($password)){

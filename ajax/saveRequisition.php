@@ -1,6 +1,6 @@
 <?php
 error_reporting(null);
-include(__DIR__ . "/../classes/init.inc");	
+include_once __DIR__ . "/classes/init.php";	
 $system_name="CENTENARY";	
 
 $title = $_POST['title'];
@@ -22,7 +22,9 @@ function requisition_number(){
     $select = $db->select($sql);
     $x = "";
     if($db->num_rows()){
+      if (is_array($select) && isset($select[0]) && is_array($select[0])) {
       extract($select[0]);
+      }
       $x = explode($suffix, $req_number);
       $x = end($x);
     }
@@ -41,7 +43,9 @@ if($reqId){
     $db = new Db();
     $by = user_id();
     $by = $db->select("SELECT TOP 1 req_id as reqIDID, req_date_added AS dateadded FROM requisition WHERE req_status = 1 AND req_added_by = '$by' AND req_division = '$division' AND req_ref = '$ref' AND req_id = '$reqId'");
+    if (is_array($by) && isset($by[0]) && is_array($by[0])) {
     extract($by[0]);
+    }
     $number = 'RQN'.date('y', $dateadded).date('m', $dateadded).str_pad($reqIDID, 6, '0', STR_PAD_LEFT);
     $db->update("requisition",["req_number"=>$number],["req_id"=>$reqIDID]);
 
@@ -52,7 +56,10 @@ if($reqId){
   $db = new Db();
   $by = user_id();
   $by = $db->select("SELECT TOP 1 req_id as reqIDID FROM requisition WHERE req_status = 1 AND req_added_by = '$by' AND req_division = '$division' AND req_ref = '$ref' ORDER BY req_id ASC");
+  
+  if (is_array($by) && isset($by[0]) && is_array($by[0])) {
   extract($by[0]);
+  }
   $number = 'RQN'.date('y').date('m').str_pad($reqIDID, 6, '0', STR_PAD_LEFT);
   $db->update("requisition",["req_number"=>$number],["req_id"=>$reqIDID]);
 }
@@ -65,11 +72,14 @@ $select = $db->select("SELECT gr_name, apg_user, user_email FROM approval_group,
 
 $users_emails = array();
 //print_r($select);
+if(is_array($select)){
+
+
 foreach($select as $row){
   extract($row);
   $users_emails[]=$user_email;
 }
-
+}
 $rg = $number;
 
 //======================================================

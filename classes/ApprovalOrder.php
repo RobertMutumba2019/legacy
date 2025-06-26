@@ -3,13 +3,14 @@ Class ApprovalOrder extends BeforeAndAfter{
 	public $page = "APPROVAL ORDER";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public static function getLinks(){
 		$page = "APPROVAL ORDER";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Requisition", 
 				"link_address"=>"approval-order/requisition",
@@ -18,8 +19,6 @@ Class ApprovalOrder extends BeforeAndAfter{
 				"link_right"=>"A",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function requisitionAction(){
@@ -33,9 +32,7 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$setter = 1;
 				foreach($role1 as $item){
 					///if(!empty($item))
-					{
-						$insert = $db->query("UPDATE approval_order SET app_role_id = '$item' WHERE app_id = $setter;");
-					}
+					$insert = $db->query("UPDATE approval_order SET app_role_id = '$item' WHERE app_id = $setter;");
 					$setter++;
 				}
 				
@@ -55,9 +52,7 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$setter = 1;
 				foreach($role2 as $item){
 					//if(!empty($item))
-					{
-						$insert = $db->query("UPDATE approval_order_second SET app_role_id = '$item' WHERE app_id = $setter;");
-					}
+					$insert = $db->query("UPDATE approval_order_second SET app_role_id = '$item' WHERE app_id = $setter;");
 					echo $db->error();
 					$setter++;
 				}
@@ -78,9 +73,7 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$setter = 1;
 				foreach($role3 as $item){
 					//if(!empty($item))
-					{
-						$insert = $db->query("UPDATE approval_order_third SET app_role_id = '$item' WHERE app_id = $setter;");
-					}
+					$insert = $db->query("UPDATE approval_order_third SET app_role_id = '$item' WHERE app_id = $setter;");
 					echo $db->error();
 					$setter++;
 				}
@@ -101,10 +94,7 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$setter = 1;
 				foreach($role4 as $item){
 					//if(!empty($item))
-					{
-						
-						$insert = $db->query("UPDATE approval_order_fourth SET app_role_id = '$item' WHERE app_id = $setter;");
-					}
+					$insert = $db->query("UPDATE approval_order_fourth SET app_role_id = '$item' WHERE app_id = $setter;");
 					echo $db->error();
 					$setter++;
 				}
@@ -125,10 +115,7 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$setter = 1;
 				foreach($role5 as $item){
 					//if(!empty($item))
-					{
-						
-						$insert = $db->query("UPDATE approval_order_fifth SET app_role_id = '$item' WHERE app_id = $setter;");
-					}
+					$insert = $db->query("UPDATE approval_order_fifth SET app_role_id = '$item' WHERE app_id = $setter;");
 					echo $db->error();
 					$setter++;
 				}
@@ -153,10 +140,14 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$app_ids = array();
 				$tot = $db->num_rows();
 				
+				if(is_array($select)){
+
+				
 				foreach($select as $sel){
 					extract($sel);
 					$app_role_ids[] = $app_role_id;
 					$app_ids[] = $app_id;
+				}
 				}
 		
 				$i=0;
@@ -182,13 +173,19 @@ Class ApprovalOrder extends BeforeAndAfter{
 						$rowsx = $db->select("SELECT * FROM user_role");
 						echo '<option value="0"> --- SELECT --- </option>';
 						$j = 0;
+
+						if(is_array($rowsx)){
+
+						
 						foreach($rowsx as $rowx){
 							extract($rowx);
 							
-							if($ur_id == $app_role_ids[$i])
-								echo '<option class="form-control" selected="selected" value="'.$ur_id.'">'.$ur_name.'</option>';
-							else
-								echo '<option class="form-control" value="'.$ur_id.'">'.$ur_name.'</option>';
+							if ($ur_id == $app_role_ids[$i]) {
+                                echo '<option class="form-control" selected="selected" value="'.$ur_id.'">'.$ur_name.'</option>';
+                            } else {
+                                echo '<option class="form-control" value="'.$ur_id.'">'.$ur_name.'</option>';
+                            }
+						}
 						}
 						?>
 						
@@ -211,11 +208,15 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$app_ids = array();
 				$tot = $db->num_rows();
 				
+				if(is_array($select)){
+
+				
 				foreach($select as $sel){
 					extract($sel);
 					$app_role_ids[] = $app_role_id;
 					$app_ids[] = $app_id;
 				}
+			    }
 		
 				$i=0;
 				//while($i <= $db->num_rows() && $i <= $tot+1){				
@@ -240,13 +241,20 @@ Class ApprovalOrder extends BeforeAndAfter{
 						$rowsx = $db->select("SELECT * FROM designation");
 						echo '<option value="0"> --- SELECT --- </option>';
 						$j = 0;
+
+						if(is_array($rowsx)){
+
+						
 						foreach($rowsx as $rowx){
 							extract($rowx);
 							
-							if($designation_id == $app_role_ids[$i])
-								echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
-							else
-								echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+							if ($designation_id == $app_role_ids[$i]) {
+                                echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
+                            } else {
+                                echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+                        
+							}
+						}
 						}
 						?>
 						
@@ -270,11 +278,15 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$app_ids = array();
 				$tot = $db->num_rows();
 				
+				if(is_array($select)){
+
+				
 				foreach($select as $sel){
 					extract($sel);
 					$app_role_ids[] = $app_role_id;
 					$app_ids[] = $app_id;
 				}
+			}
 		
 				$i=0;
 				//while($i <= $db->num_rows() && $i <= $tot+1){				
@@ -299,13 +311,19 @@ Class ApprovalOrder extends BeforeAndAfter{
 						$rowsx = $db->select("SELECT * FROM designation");
 						echo '<option value="0"> --- SELECT --- </option>';
 						$j = 0;
+
+						if(is_array($rowsx)){
+
+						
 						foreach($rowsx as $rowx){
 							extract($rowx);
 							
-							if($designation_id == $app_role_ids[$i])
-								echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
-							else
-								echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+							if ($designation_id == $app_role_ids[$i]) {
+                                echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
+                            } else {
+                                echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+                            }
+						}
 						}
 						?>
 						
@@ -329,10 +347,14 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$app_ids = array();
 				$tot = $db->num_rows();
 				
+				if(is_array($select)){
+
+				
 				foreach($select as $sel){
 					extract($sel);
 					$app_role_ids[] = $app_role_id;
 					$app_ids[] = $app_id;
+				}
 				}
 		
 				$i=0;
@@ -359,13 +381,18 @@ Class ApprovalOrder extends BeforeAndAfter{
 						echo '<option value="0"> --- SELECT --- </option>';
 						$j = 0;
 						if($db->num_rows()){
+							if(is_array($rowsx)){
+
+							
 							foreach($rowsx as $rowx){
 								extract($rowx);
 								
-								if($designation_id == $app_role_ids[$i])
-									echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
-								else
-									echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+								if ($designation_id == $app_role_ids[$i]) {
+                                    echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
+                                } else {
+                                    echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+                                }
+							}
 							}
 						}
 						?>
@@ -390,10 +417,14 @@ Class ApprovalOrder extends BeforeAndAfter{
 				$app_ids = array();
 				$tot = $db->num_rows();
 				
+				if(is_array($select)){
+
+				
 				foreach($select as $sel){
 					extract($sel);
 					$app_role_ids[] = $app_role_id;
 					$app_ids[] = $app_id;
+				}
 				}
 		
 				$i=0;
@@ -420,13 +451,18 @@ Class ApprovalOrder extends BeforeAndAfter{
 						echo '<option value="0"> --- SELECT --- </option>';
 						$j = 0;
 						if($db->num_rows()){
+							if(is_array($rowsx)){
+
+							
 							foreach($rowsx as $rowx){
 								extract($rowx);
 								
-								if($designation_id == $app_role_ids[$i])
-									echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
-								else
-									echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+								if ($designation_id == $app_role_ids[$i]) {
+                                    echo '<option class="form-control" selected="selected" value="'.$designation_id.'">'.$designation_name.'</option>';
+                                } else {
+                                    echo '<option class="form-control" value="'.$designation_id.'">'.$designation_name.'</option>';
+                                }
+							}
 							}
 						}
 						?>

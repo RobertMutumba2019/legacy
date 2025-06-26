@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 $attach_id = $_POST['attachmentID'];
@@ -139,6 +139,9 @@ if($searchWord !== '' && $searchWord !== '0'){
 	echo '<tbody>';	
 	$start = ($start)?$start:1;			
 	$i = ($eagleActivePage-1)*$rowsPerPage;
+	if(is_array($select)){
+		//ensures that it only enters the loop when the variable is accessible/iterable
+	
 	foreach($select as $row){
 		$i = $i++;
 		$i++;
@@ -158,7 +161,7 @@ if($searchWord !== '' && $searchWord !== '0'){
 		 
 		
 		/////////////////////////////////////////////////////////////////////////////
-		
+	}	
 	}
 	echo '</tbody>';
 	

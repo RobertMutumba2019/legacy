@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";	
 error_reporting(null);
 
   define("JAVA_HOSTS", "EPIGNOSKO:8780");
@@ -21,6 +21,9 @@ $push = array();
    $sqlu = "SELECT * FROM requisition WHERE req_id = '$id'";
                     $sel = $db->select($sqlu);                    
                     $db = new Db();
+                    if(is_array($sel)){
+
+                    
                     foreach($sel as $row){
                         extract($row);
                         $v = new Db(); 
@@ -30,6 +33,9 @@ $p = 0;
 
 $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
 $non =1;
+if(is_array($vv)){
+
+
 foreach($vv as $r){
     extract($r);
     $p++;
@@ -38,6 +44,7 @@ $p = str_pad($p, 2, "0", STR_PAD_LEFT);
 $req_date_added = time();//+24*60*60;
 $str .= "<MovementOrderLine><AccountCode>9999999</AccountCode><DemandQuantity>$ri_quantity</DemandQuantity><Description></Description><FromLocationIdentifier>06ST</FromLocationIdentifier><ItemCode>".trim($ri_code)."</ItemCode><LineNumber></LineNumber><OrderDate>".date('dmY',$req_date_added)."</OrderDate><TransactionPeriod></TransactionPeriod><UnitOfMovement></UnitOfMovement><UserLineNumber>".$p1."</UserLineNumber><AnalysisQuantity><Analysis2><VMolCatAnalysis_AnlCode>".$t->rgf("approval_matrix", $req_division, "ap_id","ap_code")."</VMolCatAnalysis_AnlCode></Analysis2></AnalysisQuantity><VLAB1><Base><VMolVlabEntry_Val>$ri_quantity</VMolVlabEntry_Val></Base></VLAB1></MovementOrderLine>";
 }
+}
 
 $str .= "</MovementOrder></Payload></SSC>";
 
@@ -45,7 +52,7 @@ $output = java_context()->getServlet()->SendToSun(array($str));
 
 $xml[$req_id] = simplexml_load_string($output);
 }
-
+}
 foreach($xml as $id=>$string){
     $status = $string->Payload->MovementOrder->attributes()['status'];
     if($status=="fail"){

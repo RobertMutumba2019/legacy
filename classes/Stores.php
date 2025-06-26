@@ -4,14 +4,15 @@ Class Stores extends BeforeAndAfter{
 	public $page = "STORES";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		
 	}
 	
 	
 	public static function getLinks(){
 		$page = "STORES";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"pending", 
 				"link_address"=>"stores/pending",
@@ -27,8 +28,6 @@ Class Stores extends BeforeAndAfter{
 				"link_right"=>"V",
 			),
 		);
-		
-		return $links;
 	}
 	
 	public function deletegroupAction(){
@@ -37,7 +36,7 @@ Class Stores extends BeforeAndAfter{
 	}
 
     public function pendingAction(){
-        $access = new AccessRights();
+        new AccessRights();
     ?>
         <div class="col-md-12">
             <?php 
@@ -145,7 +144,7 @@ Class Stores extends BeforeAndAfter{
     }
     
     public function pushedAction(){
-        $access = new AccessRights();
+        new AccessRights();
     ?>
         <div class="col-md-12">
             <?php 
@@ -253,7 +252,7 @@ Class Stores extends BeforeAndAfter{
     
     public function pendingOLDAction(){
 
-    require_once("http://localhost:8080/myPHPapp/java/Java.inc");
+    require_once(__DIR__ . "/http://localhost:8080/myPHPapp/java/Java.inc");
     $world = new java("HelloWorld");
 
     $db = new Db();
@@ -308,9 +307,7 @@ Class Stores extends BeforeAndAfter{
                 $errors[] = "From Date <b>(".date('Y-m-d', $start_date).")</b> cannot be greater than To Date <b>(".date('Y-m-d', $end_date).")</b>";
             }
 
-            if(empty($errors)){
-
-            }else{
+            if ($errors !== []) {
                 FeedBack::errors($errors);
             }
 
@@ -319,12 +316,11 @@ Class Stores extends BeforeAndAfter{
             $search_name = trim($_POST['search_name']);
             
             $errors = array();
-            if(empty($search_name))
-            $errors[] = "Please Enter Invoice Number";
+            if ($search_name === '' || $search_name === '0') {
+                $errors[] = "Please Enter Invoice Number";
+            }
 
-            if(empty($errors)){
-
-            }else{
+            if ($errors !== []) {
                 FeedBack::errors($errors);
             }
         }
@@ -388,10 +384,11 @@ Class Stores extends BeforeAndAfter{
         echo '<select name="search_type">';
         $v =0;
         foreach($st as $t){
-            if($search_type == $v)
+            if ($search_type == $v) {
                 echo '<option selected="selected" value="'.($v++).'">'.$t.'</option>';
-            else                
+            } else {
                 echo '<option value="'.($v++).'">'.$t.'</option>';
+            }
         }
         echo '</select> &nbsp; ';
         echo '<input type="text" value="'.$search_name.'" name="search_name" placeholder="Enter Invoice number" />';
@@ -411,10 +408,11 @@ Class Stores extends BeforeAndAfter{
         // else
         //  echo '<option value="all">All</option>';
         for($i=2020; $i<=date('Y'); $i++){
-            if($year == $i)
+            if ($year == $i) {
                 echo '<option selected value="'.$i.'">'.$i.'</option>';
-            else
+            } else {
                 echo '<option value="'.$i.'">'.$i.'</option>';
+            }
         }
         echo '</select>';
         echo '</div>';
@@ -422,15 +420,17 @@ Class Stores extends BeforeAndAfter{
         echo '<label>&nbsp; Month&nbsp;&nbsp;</label>';
         echo '<select name="month">';
         echo '<option value="">Select</option>';
-        if($month == "all")
+        if ($month == "all") {
             echo '<option selected value="all">All</option>';
-        else
+        } else {
             echo '<option value="all">All</option>';
+        }
         for($i=1; $i<=12; $i++){
-            if($month == $i)
+            if ($month == $i) {
                 echo '<option selected value="'.$i.'">'.$this->month_name($i).'</option>';
-            else
+            } else {
                 echo '<option value="'.$i.'">'.$this->month_name($i).'</option>';
+            }
         }
         echo '</select>';
         echo '</div>';
@@ -442,21 +442,20 @@ Class Stores extends BeforeAndAfter{
 
         $db = new Db();
 
-        if(isset($_POST['searchRequisition'])){
-            if($search_type==0)
+        if (isset($_POST['searchRequisition'])) {
+            if ($search_type==0) {
                 $sql = "SELECT TOP 10 * FROM requisition WHERE req_number LIKE '%$search_name%' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==1)
+            } elseif ($search_type==1) {
                 $sql = "SELECT TOP 10 * FROM requisition WHERE req_number LIKE '$search_name%' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==2)
+            } elseif ($search_type==2) {
                 $sql = "SELECT TOP 10 * FROM requisition WHERE req_number LIKE '%$search_name' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==3)
+            } elseif ($search_type==3) {
                 $sql = "SELECT TOP 10 * FROM requisition WHERE req_number = '$search_name' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
-        }else{
-            if(isset($_POST['sun'])){
-                
-            }else{
-                $sql = "SELECT TOP 10 * FROM requisition WHERE req_date_added >= '$start_date' AND req_date_added <= '$end_date' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
-            }       
+            }
+        } elseif (isset($_POST['sun'])) {
+            
+        } else{
+            $sql = "SELECT TOP 10 * FROM requisition WHERE req_date_added >= '$start_date' AND req_date_added <= '$end_date' AND req_app1_user_id IS NOT NULL AND req_pushed IS NULL ORDER BY req_number ASC, req_date_added ASC";
         }
 
 		$push = array();
@@ -520,16 +519,18 @@ $str .= "</MovementOrder></Payload></SSC>";
                 }
             }
 
-            if(!empty($errors)){
+            if($errors !== []){
                 Feedback::errors($errors);
             }
-            if(!empty($push)){
+            if($push !== []){
                 $message = '<b>No. Pushed:</b> '.number_format(count($push)).'<br/><b>Requisition and Issue Reference: </b> ';
                     $o = 0;
                     foreach($push as $p=>$r){
                         $message .= $p.'=>'.$r;
                         $o++;
-                        if($o<count($push)) $message .= ', ';
+                        if ($o<count($push)) {
+                            $message .= ', ';
+                        }
                     }
                 
                 Feedback::success($message);
@@ -558,10 +559,11 @@ $str .= "</MovementOrder></Payload></SSC>";
             $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
             $non =1;
 
-            if(array_key_exists($req_number, $push))
+            if (array_key_exists($req_number, $push)) {
                 echo '<tr style="display:none; font-weight: bold;">';
-            else
+            } else {
                 echo '<tr style="font-weight: bold;">';
+            }
 
             $row = 2; //($this->total("requisition_item", "ri_ref", $req_ref))+1;
             if(in_array($req_id, $s)){
@@ -581,10 +583,11 @@ $str .= "</MovementOrder></Payload></SSC>";
             </td>';
             echo '</tr>';
 
-            if(array_key_exists($req_number, $push))
+            if (array_key_exists($req_number, $push)) {
                 echo '<tr style="display:none;">';
-            else
+            } else {
                 echo '<tr>';
+            }
          
             echo '<td colspan="7"  style="">';
 
@@ -653,14 +656,15 @@ $str .= "</MovementOrder></Payload></SSC>";
             echo '<br/><button type="submit" name="sun" class="btn btn-primary"><i class="fa fa-fw fa-plane"></i> Push to SUN</button>';
             echo '<input type="hidden" value="'.$sql.'" name="sql2"/>';
 
-            if(isset($_POST['monthDetails']))
+            if (isset($_POST['monthDetails'])) {
                 echo '<input type="hidden" value="monthDetails" name="z"/>';
-            elseif(isset($_POST['searchRequisition']))
+            } elseif (isset($_POST['searchRequisition'])) {
                 echo '<input type="hidden" value="searchRequisition" name="z"/>';
-            elseif(isset($_POST['searchPeroid']))
+            } elseif (isset($_POST['searchPeroid'])) {
                 echo '<input type="hidden" value="searchPeroid" name="z"/>';
-            else
+            } else {
                 echo '<input type="hidden" value="searchPeroid" name="z"/>';
+            }
             
         }
 
@@ -674,14 +678,15 @@ $str .= "</MovementOrder></Payload></SSC>";
         $(document).ready(function(){
             $('.hide2').hide();
             <?php 
-            if(isset($_POST['monthDetails']) || isset($monthDetails))
+            if (isset($_POST['monthDetails']) || isset($monthDetails)) {
                 echo "$('#monthDetails').show();";
-            elseif(isset($_POST['searchRequisition']) || isset($searchRequisition))
+            } elseif (isset($_POST['searchRequisition']) || isset($searchRequisition)) {
                 echo "$('#numberDetails').show();";
-            elseif(isset($_POST['searchPeroid']) || isset($searchPeroid))
+            } elseif (isset($_POST['searchPeroid']) || isset($searchPeroid)) {
                 echo "$('#rangeDetails').show();";
-            else                
+            } else {
                 echo "$('#rangeDetails').show();";
+            }
             ?>
 
             $('.switch').click(function(){
@@ -701,7 +706,7 @@ $str .= "</MovementOrder></Payload></SSC>";
     public function pushedOldAction(){
 
         error_reporting(true);
-    require_once("http://localhost:8080/myPHPapp/java/Java.inc");
+    require_once(__DIR__ . "/http://localhost:8080/myPHPapp/java/Java.inc");
     $world = new java("HelloWorld");
 
     $db = new Db();
@@ -756,9 +761,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                 $errors[] = "From Date <b>(".date('Y-m-d', $start_date).")</b> cannot be greater than To Date <b>(".date('Y-m-d', $end_date).")</b>";
             }
 
-            if(empty($errors)){
-
-            }else{
+            if ($errors !== []) {
                 FeedBack::errors($errors);
             }
 
@@ -767,12 +770,11 @@ $str .= "</MovementOrder></Payload></SSC>";
             $search_name = trim($_POST['search_name']);
             
             $errors = array();
-            if(empty($search_name))
-            $errors[] = "Please Enter Invoice Number";
+            if ($search_name === '' || $search_name === '0') {
+                $errors[] = "Please Enter Invoice Number";
+            }
 
-            if(empty($errors)){
-
-            }else{
+            if ($errors !== []) {
                 FeedBack::errors($errors);
             }
         }
@@ -836,10 +838,11 @@ $str .= "</MovementOrder></Payload></SSC>";
         echo '<select name="search_type">';
         $v =0;
         foreach($st as $t){
-            if($search_type == $v)
+            if ($search_type == $v) {
                 echo '<option selected="selected" value="'.($v++).'">'.$t.'</option>';
-            else                
+            } else {
                 echo '<option value="'.($v++).'">'.$t.'</option>';
+            }
         }
         echo '</select> &nbsp; ';
         echo '<input type="text" value="'.$search_name.'" name="search_name" placeholder="Enter Invoice number" />';
@@ -859,10 +862,11 @@ $str .= "</MovementOrder></Payload></SSC>";
         // else
         //  echo '<option value="all">All</option>';
         for($i=2020; $i<=date('Y'); $i++){
-            if($year == $i)
+            if ($year == $i) {
                 echo '<option selected value="'.$i.'">'.$i.'</option>';
-            else
+            } else {
                 echo '<option value="'.$i.'">'.$i.'</option>';
+            }
         }
         echo '</select>';
         echo '</div>';
@@ -870,15 +874,17 @@ $str .= "</MovementOrder></Payload></SSC>";
         echo '<label>&nbsp; Month&nbsp;&nbsp;</label>';
         echo '<select name="month">';
         echo '<option value="">Select</option>';
-        if($month == "all")
+        if ($month == "all") {
             echo '<option selected value="all">All</option>';
-        else
+        } else {
             echo '<option value="all">All</option>';
+        }
         for($i=1; $i<=12; $i++){
-            if($month == $i)
+            if ($month == $i) {
                 echo '<option selected value="'.$i.'">'.$this->month_name($i).'</option>';
-            else
+            } else {
                 echo '<option value="'.$i.'">'.$this->month_name($i).'</option>';
+            }
         }
         echo '</select>';
         echo '</div>';
@@ -890,21 +896,20 @@ $str .= "</MovementOrder></Payload></SSC>";
 
         $db = new Db();
 
-        if(isset($_POST['searchRequisition'])){
-            if($search_type==0)
+        if (isset($_POST['searchRequisition'])) {
+            if ($search_type==0) {
                 $sql = "SELECT * FROM requisition WHERE req_number LIKE '%$search_name%' AND req_app1_user_id IS NOT NULL AND req_pushed IS NOT NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==1)
+            } elseif ($search_type==1) {
                 $sql = "SELECT * FROM requisition WHERE req_number LIKE '$search_name%' AND req_app1_user_id IS NOT NULL AND req_pushed IS NOT NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==2)
+            } elseif ($search_type==2) {
                 $sql = "SELECT * FROM requisition WHERE req_number LIKE '%$search_name' AND req_app1_user_id IS NOT NULL AND req_pushed  NOT NULL ORDER BY req_number ASC, req_date_added ASC";
-            elseif($search_type==3)
+            } elseif ($search_type==3) {
                 $sql = "SELECT * FROM requisition WHERE req_number = '$search_name' AND req_app1_user_id IS NOT NULL AND req_pushed IS NOT NULL ORDER BY req_number ASC, req_date_added ASC";
-        }else{
-            if(isset($_POST['sun'])){
-                
-            }else{
-                $sql = "SELECT * FROM requisition WHERE req_date_added >= '$start_date' AND req_date_added <= '$end_date' AND req_app1_user_id IS NOT NULL AND req_pushed IS NOT NULL ORDER BY req_number ASC, req_date_added ASC";
-            }       
+            }
+        } elseif (isset($_POST['sun'])) {
+            
+        } else{
+            $sql = "SELECT * FROM requisition WHERE req_date_added >= '$start_date' AND req_date_added <= '$end_date' AND req_app1_user_id IS NOT NULL AND req_pushed IS NOT NULL ORDER BY req_number ASC, req_date_added ASC";
         }
 
 		$s = array();
@@ -964,7 +969,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                 }
             }
 
-            if(!empty($errors)){
+            if($errors !== []){
                 Feedback::errors($errors);
             }
         }
@@ -1080,14 +1085,15 @@ $str .= "</MovementOrder></Payload></SSC>";
             //echo '<br/><button type="submit" name="sun" class="btn btn-primary"><i class="fa fa-fw fa-plane"></i> Push to SUN</button>';
             echo '<input type="hidden" value="'.$sql.'" name="sql2"/>';
 
-            if(isset($_POST['monthDetails']))
+            if (isset($_POST['monthDetails'])) {
                 echo '<input type="hidden" value="monthDetails" name="z"/>';
-            elseif(isset($_POST['searchRequisition']))
+            } elseif (isset($_POST['searchRequisition'])) {
                 echo '<input type="hidden" value="searchRequisition" name="z"/>';
-            elseif(isset($_POST['searchPeroid']))
+            } elseif (isset($_POST['searchPeroid'])) {
                 echo '<input type="hidden" value="searchPeroid" name="z"/>';
-            else
+            } else {
                 echo '<input type="hidden" value="searchPeroid" name="z"/>';
+            }
             
         }
 
@@ -1101,14 +1107,15 @@ $str .= "</MovementOrder></Payload></SSC>";
         $(document).ready(function(){
             $('.hide2').hide();
             <?php 
-            if(isset($_POST['monthDetails']) || isset($monthDetails))
+            if (isset($_POST['monthDetails']) || isset($monthDetails)) {
                 echo "$('#monthDetails').show();";
-            elseif(isset($_POST['searchRequisition']) || isset($searchRequisition))
+            } elseif (isset($_POST['searchRequisition']) || isset($searchRequisition)) {
                 echo "$('#numberDetails').show();";
-            elseif(isset($_POST['searchPeroid']) || isset($searchPeroid))
+            } elseif (isset($_POST['searchPeroid']) || isset($searchPeroid)) {
                 echo "$('#rangeDetails').show();";
-            else                
+            } else {
                 echo "$('#rangeDetails').show();";
+            }
             ?>
 
             $('.switch').click(function(){
@@ -1130,7 +1137,7 @@ $str .= "</MovementOrder></Payload></SSC>";
     public function numPending(){
         $db = new Db();
         //return 3;
-        $select = $db->select("SELECT req_id FROM requisition WHERE req_app1_user_id IS NOT NULL AND req_pushed IS NULL");
+        $db->select("SELECT req_id FROM requisition WHERE req_app1_user_id IS NOT NULL AND req_pushed IS NULL");
        return $db->num_rows();
     }
 	

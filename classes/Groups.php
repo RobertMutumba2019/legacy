@@ -9,23 +9,24 @@ Class Groups extends BeforeAndAfter{
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-groups"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-groups") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-group"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-group") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 	
 	
 	public static function getLinks(){
 		$page = "GROUPS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Group", 
 				"link_address"=>"groups/add-group",
@@ -48,8 +49,6 @@ Class Groups extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function deletegroupAction(){
@@ -76,18 +75,18 @@ Class Groups extends BeforeAndAfter{
 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name||$col_3 != "UNIT NAME" ||$col_2 != "GROUP NAME" ){
+						if($col_1 !== $valid_name||$col_3 !== "UNIT NAME" ||$col_2 !== "GROUP NAME" ){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
-						if(empty($col_2)){
+						if($col_2 === '' || $col_2 === '0'){
 							$errors[] = "Cell <b>B".$count."</b> should not be empty";
 						}
-						if(empty($col_3)){
+						if($col_3 === '' || $col_3 === '0'){
 							$errors[] = "Cell <b>C".$count."</b> should not be empty";
 						}
 
@@ -107,7 +106,7 @@ Class Groups extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -174,7 +173,7 @@ Class Groups extends BeforeAndAfter{
 				$errors[]="Group Name($groupname) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->insert("groups",["gr_date_added"=>time(),"gr_matrix"=>$matrix,"gr_name"=>$groupname,"gr_added_by"=>user_id()]);
 				
 				if(empty($db->error())){
@@ -213,15 +212,19 @@ Class Groups extends BeforeAndAfter{
 										<?php
 										$db = new Db();
 										$select = $db->select("SELECT * FROM approval_matrix ORDER BY ap_unit_code ASC");
+										if(is_array($select)){
+
+										
 										foreach($select as $row){
 											extract($row);
 											if(!$this->rgf("groups", $ap_id, "gr_matrix", "gr_id")){
-												if($matrix == $ap_id)
-													echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
-												else
-													echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+												if ($matrix == $ap_id) {
+                                                    echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                                }
 											}
-										}
+										}}
 										?>
 										</select>
 										<script type="text/javascript">$('.select2').select2();</script>
@@ -242,7 +245,9 @@ Class Groups extends BeforeAndAfter{
 		$id = $this->id;
 		$db=new Db();
 		$select=$db->select("select * from groups WHERE gr_id ='$id'");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+		}
 		$groupname = $gr_name; 
 		$matrix = $gr_matrix; 
 
@@ -261,7 +266,7 @@ Class Groups extends BeforeAndAfter{
 				$errors[]="Group Name($groupname) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->update("groups",["gr_matrix"=>$matrix,"gr_date_added"=>time(),"gr_name"=>$groupname,"gr_added_by"=>user_id()],["gr_id"=>$id]);
 				
 				if(empty($db->error())){
@@ -301,16 +306,19 @@ Class Groups extends BeforeAndAfter{
 										<?php
 										$db = new Db();
 										$select = $db->select("SELECT * FROM approval_matrix ORDER BY ap_unit_code ASC");
+										
+										if(is_array($select)){
+
+										
 										foreach($select as $row){
 											extract($row);
 											//if(!$this->rgf("groups", $ap_id, "gr_matrix", "gr_id"))
-											{
-												if($matrix == $ap_id)
-													echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
-												else
-													echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
-											}
-										}
+											if ($matrix == $ap_id) {
+                                                echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                            } else {
+                                                echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                            }
+										}}
 										?>
 										</select>
 									</div>
@@ -327,7 +335,7 @@ Class Groups extends BeforeAndAfter{
 	}
 
 		public function AllgroupsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -434,7 +442,7 @@ Class Groups extends BeforeAndAfter{
 	}
 	
 	public function sActionqw(){
-	$access = new AccessRights();
+	new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -459,6 +467,9 @@ Class Groups extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -479,7 +490,7 @@ Class Groups extends BeforeAndAfter{
 				echo '</table>';
 
 				
-			}
+				}}
 			
 			?>
 		</div>

@@ -1,4 +1,7 @@
 <?php
+
+include_once __DIR__ . "/Exporter.inc";
+
 Class Branches extends BeforeAndAfter{
 	public $page = "branches";
 	public function deleteBranchAction(){		
@@ -13,7 +16,8 @@ Class Branches extends BeforeAndAfter{
 	
 	public static function getLinks(){
 		$page = "branches";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Branch", 
 				"link_address"=>"branches/add-branch",
@@ -36,8 +40,6 @@ Class Branches extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 
 
@@ -58,12 +60,12 @@ Class Branches extends BeforeAndAfter{
 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
 
@@ -79,7 +81,7 @@ Class Branches extends BeforeAndAfter{
 				fclose($file);
 				
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -142,7 +144,7 @@ Class Branches extends BeforeAndAfter{
 				$errors[] = "$branch already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 
 			$x = $db->insert("branch",["branch_date_added"=>$time, "branch_name"=>$branch,"branch_added_by"=>$user]);
 			
@@ -189,7 +191,9 @@ Class Branches extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from branch WHERE branch_id='$id'");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0][0]);
+		}
 		if(isset($_POST['submit'])){
 		
 			$branch = $_POST['branch'];
@@ -208,7 +212,7 @@ Class Branches extends BeforeAndAfter{
 				$errors[] = "$branch already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 
 			$x = $db->update("branch",["branch_date_added"=>$time, "branch_name"=>$branch,"branch_added_by"=>$user,"branch_status"=>$status],["branch_id"=>$id]);
 			
@@ -249,15 +253,17 @@ Class Branches extends BeforeAndAfter{
 											<?php
 											echo '<select name="status">';
 
-											if($branch_status == 0)
-												echo '<option value="0" selected="selected">'.$this->show2.'</option>';
-											else
-												echo '<option value="0">'.$this->show2.'</option>';
+											if ($branch_status == 0) {
+                                                echo '<option value="0" selected="selected">'.$this->show2.'</option>';
+                                            } else {
+                                                echo '<option value="0">'.$this->show2.'</option>';
+                                            }
 
-											if($branch_status == 1)
-												echo '<option value="1" selected="selected">'.$this->show1.'</option>';
-											else
-												echo '<option value="1">'.$this->show1.'</option>';
+											if ($branch_status == 1) {
+                                                echo '<option value="1" selected="selected">'.$this->show1.'</option>';
+                                            } else {
+                                                echo '<option value="1">'.$this->show1.'</option>';
+                                            }
 											echo '</select>';
 											?>
 										</div>
@@ -311,6 +317,9 @@ Class Branches extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -327,12 +336,15 @@ Class Branches extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','branches/edit-branch/'.$branch_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page, 'D'))
-							echo $this->action('delete','branches/delete-branch/'.$branch_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','branches/edit-branch/'.$branch_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page, 'D')) {
+                            echo $this->action('delete','branches/delete-branch/'.$branch_id, 'Delete');
+                        }
 						echo '</td>';
 					}
+				}
 					echo '</tr>';
 					
 					//////////////////////////////////REPORT STEP 2//////////////////////////////////	
@@ -374,8 +386,9 @@ Class Branches extends BeforeAndAfter{
 		$id = portion(3);
 		$db = new Db();
 		$select = $db->select("SELECT * FROM department WHERE dept_id = '$id'");
-		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0][0]);
+		}
 		
 		$department = $dept_name;
 		if(isset($_POST['submit'])){
@@ -470,13 +483,16 @@ Class Branches extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department ORDER BY dept_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
-												if($dept_id == $department_id)
-													echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($dept_id == $department_id) {
+                                                    echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -516,7 +532,9 @@ Class Branches extends BeforeAndAfter{
 				echo '</thead>';
 				
 				$i=1;
+
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -530,6 +548,7 @@ Class Branches extends BeforeAndAfter{
 					echo '</td>';
 					echo '</tr>';
 				}
+			}
 				echo '</tbody>';
 				
 				echo '</table>';

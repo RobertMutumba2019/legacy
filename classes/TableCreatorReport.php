@@ -1,12 +1,8 @@
 <?php 
 Class TableCreatorReport{
 	public $all = "";
-	private $generator = "";
-	private $tableName = "";
 
 	Public function open($generator="", $tableName="", $classes=array(), $id="table"){
-		$this->generator = $generator;
-		$this->tableName = $tableName;
 		$this->all .= '<style>
 						#table{
 						  border-spacing:0;
@@ -48,7 +44,7 @@ Class TableCreatorReport{
 		$all_classes = "class = '";
 		$all_ids = "";
 
-		foreach ($classes as $key => $value) {
+		foreach ($classes as $value) {
 			$all_classes .= "$value ";
 		}
 		$all_classes .= "' ";
@@ -64,7 +60,6 @@ Class TableCreatorReport{
 	}
 
 	Public function th($ths=array()){
-		$all_ths = "";
 		foreach($ths as $th=>$values){			
 			$this->all .= "<tr>";
 			foreach($ths as $th=>$values){
@@ -76,7 +71,6 @@ Class TableCreatorReport{
 	}
 
 	Public function td($tds=array()){
-		$all_tds = "";
 		foreach($tds as $td=>$values){			
 			$this->all .= "<tr>";
 			foreach($tds as $td=>$values){
@@ -88,26 +82,26 @@ Class TableCreatorReport{
 	}
 
 	Public function thd($tds=array()){
-		$all_tds = "";
 		$i=0;
-		foreach($tds as $td=>$values){
+		foreach($tds as $values){
 			$total = count($values);
 
 			if($i>=1){
 
-				if($i%2 == 0)
-					$this->all .= "<tr style='background-color:#EBEBEB; $align'>";
-				else
-					$this->all .= "<tr style='background-color:#fff; $align' >";
+				if ($i%2 == 0) {
+                    $this->all .= "<tr style='background-color:#EBEBEB; $align'>";
+                } else {
+                    $this->all .= "<tr style='background-color:#fff; $align' >";
+                }
 				
 
 				//$this->all .= "<tr>";
 				$this->all .= "<td>".($i).".</td>";
 
-				foreach($values as $td=>$val){
+				foreach($values as $val){
 
 					$align = "";
-					if(is_int($val)||is_double($val)){
+					if(is_int($val)||is_float($val)){
 						$align = " text-align:right; ";
 					}
 
@@ -129,7 +123,7 @@ Class TableCreatorReport{
 				
 				$this->all .= "<thead><tr>";
 				$this->all .="<th width='30px'>No.</th>";
-				foreach($values as $td=>$val){
+				foreach($values as $val){
 					$this->all .= "<th style='background-color:#336F89; color:#fff;'>$val</th>";
 				}
 				$this->all .= "</tr></thead><tbody>";

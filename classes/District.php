@@ -1,15 +1,17 @@
 <?php
+include_once __DIR__ . "/Exporter.inc";
 Class District extends BeforeAndAfter{
 	public $page = "DISTRICT";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public function getLinks(){
 		$page = "DISTRICT";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add District", 
 				"link_address"=>"district/add-district",
@@ -25,12 +27,10 @@ Class District extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function deleteDesignationAction(){
-		$id = portion(3);
+		portion(3);
 		//$this->deletor("designation", "designation_id",  $id, 'designation/all-user-role');
 	}
 	
@@ -57,7 +57,7 @@ Class District extends BeforeAndAfter{
 				$errors[]="District Code ($code) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->insert("district",["district_date_added"=>$time, "district_name"=>"$district","district_added_by"=>$user,"district_code"=>$code]);
 								
 				
@@ -111,7 +111,9 @@ Class District extends BeforeAndAfter{
 		$id = portion(3);
 
 		$select = $db->select("SELECT * FROM district WHERE district_id = '$id'");
-		extract($select[0][0]);
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
+		extract($select[0][0]);}
 		$district = $district_name;
 		$code = $district_code;
 
@@ -137,7 +139,7 @@ Class District extends BeforeAndAfter{
 				$errors[]="District Code ($code) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->update("district",["district_date_added"=>$time, "district_name"=>"$district","district_added_by"=>$user,"district_code"=>$code], ["district_id"=>$id]);
 								
 				
@@ -190,7 +192,9 @@ Class District extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from district WHERE district_id='$id'");
-		extract($select[0][0]);
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
+		extract($select[0][0]);}
 		if(isset($_POST['submit'])){
 		
 			$district = $_POST['district'];
@@ -213,7 +217,7 @@ Class District extends BeforeAndAfter{
 				$errors[]="District Code($code) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db = new Db();
 
 				$x = $db->update("district",["district_date_added"=>$time, "district_name"=>"$district","district_added_by"=>$user,"district_code"=>$code],["district_id"=>$id]);
@@ -301,6 +305,8 @@ Class District extends BeforeAndAfter{
 				//////////////////////////////////////////////////////////////
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -312,12 +318,14 @@ Class District extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','district/edit-district/'.$district_id, 'Edit');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','district/edit-district/'.$district_id, 'Edit');
+                        }
 						//if($access->sectionAccess(user_id(), $this->page, 'D'))
 							//echo $this->action('delete','designation/delete-designation/'.$designation_id, 'Delete');
 						echo '</td>';
 					}
+				}
 					echo '</tr>';
 					
 					//////////////////////////////////REPORT STEP 2//////////////////////////////////	

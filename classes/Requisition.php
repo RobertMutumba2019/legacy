@@ -8,7 +8,7 @@ Class Requisition extends BeforeAndAfter{
 	}
 
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
@@ -34,7 +34,8 @@ Class Requisition extends BeforeAndAfter{
 		}
 
 		$page = "REQUISITION";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"New Requisition", 
 				"link_address"=>"requisition/new-requisition",
@@ -71,8 +72,6 @@ Class Requisition extends BeforeAndAfter{
 				"link_right"=>"V",
 			),
 		);
-		
-		return $links;
 	}
 	
 	public function deleteVehicleRequestAction(){
@@ -82,7 +81,7 @@ Class Requisition extends BeforeAndAfter{
 	
 	public function AddVehicleRequestAction(){
 		$this->full_name($this->hod(user_id()));
-		$vehicle_request_number = $this->vehicle_request_number();
+		$this->vehicle_request_number();
 
 	}
 
@@ -94,19 +93,19 @@ Class Requisition extends BeforeAndAfter{
 		$select = $db->select($sql);
 		$x = "";
 		if($db->num_rows()){
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 			extract($select[0]);
+			}
 			$x = explode($suffix, $req_number);
 			$x = end($x);
 		}
 		//echo '>>'.$req_number;
 		$f = (int)$x+1;
-
-		$number = $suffix.str_pad($f, 5, "0", STR_PAD_LEFT);
-		return $number;	
+		return $suffix.str_pad($f, 5, "0", STR_PAD_LEFT);	
 	}
 
 	public function status($req){
-		$db = new Db();
+		new Db();
 		$s = $this->rgf("requisition", $req, "req_id", "req_status");
 		if($s=='-1'){
 			return 'Draft';
@@ -124,6 +123,7 @@ Class Requisition extends BeforeAndAfter{
 				$i++;
 			}
 		}
+        return null;
 	}
 
 
@@ -168,35 +168,30 @@ Class Requisition extends BeforeAndAfter{
 			$up = $_POST['up'];
 			$item_description = $_POST['item_description'];
 
-			if(isset($_SESSION['line_number'])){
-				if($_SESSION['line_number'] != 1){
+			if (isset($_SESSION['line_number'])) {
+                if($_SESSION['line_number'] != 1){
 					$_SESSION['line_number'] -= 1;
 				}
-			}else{
-				if($numbers){
-					$_SESSION['line_number'] = $numbers-1;
-				}
-			}
+            } elseif ($numbers) {
+                $_SESSION['line_number'] = $numbers-1;
+            }
 
 		}
-
-		//if(isset($_POST['remove']) || isset($_POST['add_more']) ){
-		if(1){
-			$title = $_POST['title']; $division = $_POST['division'];
-			$item_code = $_POST['item_code'];
-			$item_quantity = $_POST['item_quantity'];
-			$uom = $_POST['uom'];
-			$up = $_POST['up'];
-			$item_description = $_POST['item_description'];
-
-			for($i=0; $i<$_SESSION['line_number']; $i++){
+        //if(isset($_POST['remove']) || isset($_POST['add_more']) ){
+        $title = $_POST['title'];
+        $division = $_POST['division'];
+        $item_code = $_POST['item_code'];
+        $item_quantity = $_POST['item_quantity'];
+        $uom = $_POST['uom'];
+        $up = $_POST['up'];
+        $item_description = $_POST['item_description'];
+        for($i=0; $i<$_SESSION['line_number']; $i++){
 				${"item_code".$i} = $item_code[$i];
 				${"item_quantity".$i} = $item_quantity[$i];
 				${"uom".$i} = $uom[$i];
 				${"up".$i} = $up[$i];
 				${"item_description".$i} = $item_description[$i];
 			}
-		}
 
 		if(isset($_POST['draft'])||isset($_POST['forward'])){
 			$db = new Db();
@@ -233,46 +228,41 @@ Class Requisition extends BeforeAndAfter{
 					$price = $up[$i];
 					$desc = $item_description[$i];
 
-					if(isset($_POST['forward'])){
-						if(!empty($item) || !empty($qty) || !empty($measure) || !empty($price) || !empty($desc)){
-							if(empty($item)){
+					if (isset($_POST['forward']) && (!empty($item) || !empty($qty) || !empty($measure) || !empty($price) || !empty($desc))) {
+                        if(empty($item)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Item code must not be empty";
 								${"item_code_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_code_border".$i} = "";							
 							}
-
-							if(empty($qty)){
+                        if(empty($qty)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Quantity must not be empty";
 								${"item_quantity_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_quantity_border".$i} = "";							
 							}
-
-							if(empty($measure)){
+                        if(empty($measure)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Unit of Measure must not be empty";
 								${"uom_border".$i} = "border:1px solid red;";
 							}else{
 								${"uom_border".$i} = "";							
 							}
-							// if(empty($price)){
-							// 	$errors[] = "Check <b>Line ".($i+1)."</b>, Price must not be empty";
-							// 	${"up_border".$i} = "border:1px solid red;";
-							// }else{
-							// 	${"up_border".$i} = "";							
-							// }
-							if(empty($desc)){
+                        // if(empty($price)){
+                        // 	$errors[] = "Check <b>Line ".($i+1)."</b>, Price must not be empty";
+                        // 	${"up_border".$i} = "border:1px solid red;";
+                        // }else{
+                        // 	${"up_border".$i} = "";							
+                        // }
+                        if(empty($desc)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Description must not be empty";
 								${"item_description_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_description_border".$i} = "";							
 							}
-						}
-
-					}
+                    }
 				}
 
-				if(empty($errors)){
+				if($errors === []){
 					$ref = user_id().time();
 
 					if(isset($_POST['draft'])){
@@ -298,10 +288,14 @@ Class Requisition extends BeforeAndAfter{
 						
 						$users_emails = array();
 						//print_r($select);
+						if(is_array($select)){
+
+						
 						foreach($select as $row){
 							extract($row);
 							$users_emails[]=$user_email;
 						}
+					}
 
 						
 						// if($activeDelegate){
@@ -342,7 +336,6 @@ Class Requisition extends BeforeAndAfter{
 						$insert = $db->insert("requisition_item", [
 							"ri_code"=>$item,
 							"ri_quantity"=>$qty,
-							"ri_quantity"=>$qty,
 							//"ri_price"=>$price,
 							"ri_uom"=>$measure,
 							"ri_description"=>$desc,
@@ -357,7 +350,7 @@ Class Requisition extends BeforeAndAfter{
 				}
 			}
 
-			if(isset($_POST['forward'])&&empty($errors)){
+			if(isset($_POST['forward'])&&$errors === []){
 				Feedback::success();
 				Feedback::refresh(3, return_url()."requisition/pending-requisitions");
 				unset($_SESSION['line_number']);
@@ -368,7 +361,9 @@ Class Requisition extends BeforeAndAfter{
 			}
 
 		}
-		if(empty($_SESSION['line_number'])) $_SESSION['line_number'] = 1;
+		if (empty($_SESSION['line_number'])) {
+            $_SESSION['line_number'] = 1;
+        }
 		$line_number = (empty($_SESSION['line_number']))? 1 : $_SESSION['line_number'];
 
 		?>
@@ -391,12 +386,17 @@ Class Requisition extends BeforeAndAfter{
 							<?php 
 							$db = new Db();
 							$select = $db->select("SELECT * FROM approval_matrix ORDER BY ap_unit_code ASC");
+							if(is_array($select)){
+
+							
 							foreach($select as $row){
 								extract($row);
-								if($division == $ap_id)
-									echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
-								else
-									echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+								if ($division == $ap_id) {
+                                    echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                } else {
+                                    echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                }
+							}
 							}
 							?>
 						</select>
@@ -419,7 +419,9 @@ Class Requisition extends BeforeAndAfter{
 						<div class="line-title" style="display:none;">Line <?php echo $i+1; ?></div>
 						<div class="col-md-2" style="padding:0;margin:0;">
 							<?php 							
-							if($i==0) echo '<label>Item Code</label>';
+							if ($i==0) {
+                                echo '<label>Item Code</label>';
+                            }
 							if(!empty(${"item_code".$i})){
 								$oio = '<option value="'.${"item_code".$i}.'">'.${"item_code".$i}.'</option>';
 							}else{
@@ -441,7 +443,9 @@ Class Requisition extends BeforeAndAfter{
 						<div class="col-md-6" style="padding:0;margin:0;">
 							<?php 
 
-							if($i==0) echo '<label>Item Description</label>';
+							if ($i==0) {
+                                echo '<label>Item Description</label>';
+                            }
 							if(!empty(${"item_description".$i})){
 								$oio = '<option value="'.${"item_description".$i}.'">'.${"item_description".$i}.'</option>';
 							}else{
@@ -456,7 +460,9 @@ Class Requisition extends BeforeAndAfter{
 						<div class="col-md-2" style="padding:0;margin:0;">
 							<?php
 
-							if($i==0) echo '<label>Quantity</label>';
+							if ($i==0) {
+                                echo '<label>Quantity</label>';
+                            }
 							if(${"item_quantity".$i}==""){
 								${"item_quantity".$i}=1;
 							}
@@ -464,7 +470,9 @@ Class Requisition extends BeforeAndAfter{
 							<input autocomplete="off" style="<?php echo ${"item_quantity_border".$i}.$vop; ?>" type="number" min="1" name="item_quantity[]" value="<?php echo ${"item_quantity".$i}; ?>" class="form-control" id="<?php echo "qty".$i; ?>"/>
 						</div>
 						<div class="col-md-2" style="padding:0;margin:0;">
-							<?php if($i==0) echo '<label>Unit of Measure</label>'; ?>
+							<?php if ($i==0) {
+                                echo '<label>Unit of Measure</label>';
+                            } ?>
 							<input style="<?php echo ${"uom_border".$i}.$vop; ?>" type="text" name="uom[]" id="<?php echo "uom".$i; ?>" value="<?php echo ${"uom".$i}; ?>" class="form-control"/>
 						</div>
 					</div>
@@ -538,6 +546,10 @@ Class Requisition extends BeforeAndAfter{
 									echo 'There are no attachments';
 								}else{
 									echo '<ol class="attachment-list">';
+									
+									if(is_array($select)){
+
+									
 									foreach($select as $row){
 										extract($row);
 										echo '<li id="list'.$at_id.'">';
@@ -546,6 +558,7 @@ Class Requisition extends BeforeAndAfter{
 										echo '<a href="'.$at_path.'" target="_blank">'.$at_name.'</a>';
 										
 										echo '</li>';
+									}
 									}
 									echo '</ol>';
 								}
@@ -643,10 +656,14 @@ Class Requisition extends BeforeAndAfter{
 		$number = portion(3);
 		$number2 = (int)portion(3);
 		$select = $db->select("SELECT * FROM requisition WHERE req_number = '$number' OR req_id = '$number2'");
-		extract($select[0]);
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+		extract($select[0]);}
 		$sel = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref'");
 		$lll = $db->num_rows();
 		$i = 0;
+		if(is_array($sel){
+
+		
 		foreach($sel as $row){
 			extract($row);
 			${"item_code".$i} = $ri_code;
@@ -655,12 +672,15 @@ Class Requisition extends BeforeAndAfter{
 			//${"up".$i} = $ri_price;
 			${"item_description".$i} = $ri_description;
 			$i++;
+		}
 		}		
 
 		$title = $req_title;
 		$division = $req_division;
 		$requisition_number = $req_number;
-		if(empty($requisition_number)) $requisition_number = $this->requisition_number();
+		if (empty($requisition_number)) {
+            $requisition_number = $this->requisition_number();
+        }
 		if(isset($_POST['add_more'])){
 
 			$title = $_POST['title']; $division = $_POST['division'];
@@ -696,15 +716,13 @@ Class Requisition extends BeforeAndAfter{
 			//$up = $_POST['up'];
 			$item_description = $_POST['item_description'];
 
-			if(isset($_SESSION['line_number'])){
-				if($_SESSION['line_number'] != 1){
+			if (isset($_SESSION['line_number'])) {
+                if($_SESSION['line_number'] != 1){
 					$_SESSION['line_number'] -= 1;
 				}
-			}else{
-				if($numbers){
-					$_SESSION['line_number'] = $numbers-1;
-				}
-			}
+            } elseif ($numbers) {
+                $_SESSION['line_number'] = $numbers-1;
+            }
 
 		}
 
@@ -726,16 +744,16 @@ Class Requisition extends BeforeAndAfter{
 			}
 		}
 
-		if(isset($_POST['draft'])||isset($_POST['forward'])){
-			$db = new Db();
-			$title = $_POST['title']; $division = $_POST['division'];
-			$item_code = $_POST['item_code'];
-			$item_quantity = $_POST['item_quantity'];
-			$uom = $_POST['uom'];
-			//$up = $_POST['up'];
-			$item_description = $_POST['item_description'];
-
-			if(isset($_POST['forward'])){
+		if (isset($_POST['draft'])||isset($_POST['forward'])) {
+            $db = new Db();
+            $title = $_POST['title'];
+            $division = $_POST['division'];
+            $item_code = $_POST['item_code'];
+            $item_quantity = $_POST['item_quantity'];
+            $uom = $_POST['uom'];
+            //$up = $_POST['up'];
+            $item_description = $_POST['item_description'];
+            if(isset($_POST['forward'])){
 				if(empty($title)){
 					$errors[] = "Enter Title";
 					${"title_border"} = "border:1px solid red;";
@@ -750,8 +768,7 @@ Class Requisition extends BeforeAndAfter{
 					${"division_border"} = "";							
 				}
 			}
-
-			if(isset($_POST['draft'])||isset($_POST['forward'])){
+            if(isset($_POST['draft'])||isset($_POST['forward'])){
 				for($i=0; $i<$_SESSION['line_number']; $i++){
 
 					$item = $item_code[$i];
@@ -760,75 +777,38 @@ Class Requisition extends BeforeAndAfter{
 					//$price = $up[$i];
 					$desc = $item_description[$i];
 
-					if(isset($_POST['forward'])){
-						if((!empty($item) || !empty($qty) || !empty($measure) || !empty($price) || !empty($desc))&&$i>0){
-							if(empty($item)){
+					if (isset($_POST['forward'])) {
+                        if(empty($item)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Item code must not be empty";
 								${"item_code_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_code_border".$i} = "";							
 							}
-
-							if(empty($qty)){
+                        if(empty($qty)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Quantity must not be empty";
 								${"item_quantity_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_quantity_border".$i} = "";							
 							}
-
-							if(empty($measure)){
+                        if(empty($measure)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Unit of Measure must not be empty";
 								${"uom_border".$i} = "border:1px solid red;";
 							}else{
 								${"uom_border".$i} = "";							
 							}
-							// if(empty($price)){
-							// 	$errors[] = "Check <b>Line ".($i+1)."</b>, Price must not be empty";
-							// 	${"up_border".$i} = "border:1px solid red;";
-							// }else{
-							// 	${"up_border".$i} = "";							
-							// }
-							if(empty($desc)){
+                        // if(empty($price)){
+                        // 	$errors[] = "Check <b>Line ".($i+1)."</b>, Price must not be empty";
+                        // 	${"up_border".$i} = "border:1px solid red;";
+                        // }else{
+                        // 	${"up_border".$i} = "";							
+                        // }
+                        if(empty($desc)){
 								$errors[] = "Check <b>Line ".($i+1)."</b>, Description must not be empty";
 								${"item_description_border".$i} = "border:1px solid red;";
 							}else{
 								${"item_description_border".$i} = "";							
 							}
-						}else{
-							if(empty($item)){
-								$errors[] = "Check <b>Line ".($i+1)."</b>, Item code must not be empty";
-								${"item_code_border".$i} = "border:1px solid red;";
-							}else{
-								${"item_code_border".$i} = "";							
-							}
-
-							if(empty($qty)){
-								$errors[] = "Check <b>Line ".($i+1)."</b>, Quantity must not be empty";
-								${"item_quantity_border".$i} = "border:1px solid red;";
-							}else{
-								${"item_quantity_border".$i} = "";							
-							}
-
-							if(empty($measure)){
-								$errors[] = "Check <b>Line ".($i+1)."</b>, Unit of Measure must not be empty";
-								${"uom_border".$i} = "border:1px solid red;";
-							}else{
-								${"uom_border".$i} = "";							
-							}
-							// if(empty($price)){
-							// 	$errors[] = "Check <b>Line ".($i+1)."</b>, Price must not be empty";
-							// 	${"up_border".$i} = "border:1px solid red;";
-							// }else{
-							// 	${"up_border".$i} = "";							
-							// }
-							if(empty($desc)){
-								$errors[] = "Check <b>Line ".($i+1)."</b>, Description must not be empty";
-								${"item_description_border".$i} = "border:1px solid red;";
-							}else{
-								${"item_description_border".$i} = "";							
-							}
-						}
-					}
+                    }
 				}
 
 				if(empty($errors)){
@@ -918,8 +898,7 @@ Class Requisition extends BeforeAndAfter{
 					Feedback::errors($errors);					
 				}
 			}
-
-			if(isset($_POST['forward'])&&empty($errors)){
+            if(isset($_POST['forward'])&&empty($errors)){
 				Feedback::success();
 				Feedback::refresh(3, return_url()."requisition/pending-requisitions");
 				unset($_SESSION['line_number']);
@@ -928,13 +907,14 @@ Class Requisition extends BeforeAndAfter{
 				Feedback::refresh(3, return_url()."requisition/draft-requisitions");
 				unset($_SESSION['line_number']);
 			}
-		}else{
-			if(isset($_POST['remove']) || isset($_POST['add_more'])){
-			}else{
+        } elseif (isset($_POST['remove']) || isset($_POST['add_more'])) {
+            
+        } else{
 				$_SESSION['line_number']=$lll;
 			}
-		}
-		if(empty($_SESSION['line_number'])) $_SESSION['line_number'] = 1; 
+		if (empty($_SESSION['line_number'])) {
+            $_SESSION['line_number'] = 1;
+        } 
 		$line_number = (empty($_SESSION['line_number']))? 1 : $_SESSION['line_number'];
 
 		?>
@@ -959,10 +939,11 @@ Class Requisition extends BeforeAndAfter{
 							$select = $db->select("SELECT * FROM approval_matrix ORDER BY ap_unit_code ASC");
 							foreach($select as $row){
 								extract($row);
-								if($division == $ap_id)
-									echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
-								else
-									echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+								if ($division == $ap_id) {
+                                    echo '<option selected="selected" value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                } else {
+                                    echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
+                                }
 							}
 							?>
 						</select>
@@ -986,7 +967,9 @@ Class Requisition extends BeforeAndAfter{
 
 						<div class="col-md-2" style="padding:0;margin:0;">
 							<?php 
-							if($i==0) echo '<label>Item Code</label>';
+							if ($i==0) {
+                                echo '<label>Item Code</label>';
+                            }
 							if(!empty(${"item_code".$i})){
 								$oio = '<option value="'.${"item_code".$i}.'">'.${"item_code".$i}.'</option>';
 							}else{
@@ -1007,7 +990,9 @@ Class Requisition extends BeforeAndAfter{
 						</div>
 						<div class="col-md-6"  style="padding:0;margin:0;">
 							<?php 							
-							if($i==0) echo '<label>Item Description</label>';
+							if ($i==0) {
+                                echo '<label>Item Description</label>';
+                            }
 							if(!empty(${"item_description".$i})){
 								$oio = '<option value="'.${"item_description".$i}.'">'.${"item_description".$i}.'</option>';
 							}else{
@@ -1021,7 +1006,9 @@ Class Requisition extends BeforeAndAfter{
 						</div>
 						<div class="col-md-2" style="padding:0;margin:0;">
 							<?php							
-							if($i==0) echo '<label>Quantity</label>';
+							if ($i==0) {
+                                echo '<label>Quantity</label>';
+                            }
 							if(${"item_quantity".$i}==""){
 								${"item_quantity".$i}=1;
 							}
@@ -1030,7 +1017,9 @@ Class Requisition extends BeforeAndAfter{
 						</div>
 						<div class="col-md-2"  style="padding:0;margin:0;">
 							<?php 
-							if($i==0) echo '<label>Unit of Measure</label>';
+							if ($i==0) {
+                                echo '<label>Unit of Measure</label>';
+                            }
 							?>
 							<input style="<?php echo ${"uom_border".$i}.$vop; ?>" type="text" name="uom[]" id="<?php echo "uom".$i; ?>" value="<?php echo ${"uom".$i}; ?>" class="form-control"/>
 						</div>
@@ -1205,7 +1194,7 @@ Class Requisition extends BeforeAndAfter{
 	}
 
 	public function draftRequisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -1312,7 +1301,7 @@ Class Requisition extends BeforeAndAfter{
 	}
 
 	public function approvedRequisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -1418,7 +1407,7 @@ Class Requisition extends BeforeAndAfter{
 		<?php
 	}
 	public function pendingRequisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -1524,7 +1513,7 @@ Class Requisition extends BeforeAndAfter{
 		<?php
 	}
 	public function rejectedRequisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -1706,24 +1695,21 @@ Class Requisition extends BeforeAndAfter{
 	public function viewRequisitionAction(){
 
 		// if(!$this->id){
-		// 	$number = portion(3);
-		// 	$number2 = (int)portion(3);
-		// }else
-		{
-			$number = $this->id;
-			$number2 = $this->id;
-		}
-
-		///////////////////////////////////////////////////////////////
+        // 	$number = portion(3);
+        // 	$number2 = (int)portion(3);
+        // }else
+        $number = $this->id;
+        $number2 = $this->id;
+        ///////////////////////////////////////////////////////////////
 		if(!empty($number)){
 			$db = new Db();
 			$select = $db->select("SELECT * FROM requisition WHERE req_number = '$number' OR req_id = '$number2'");
 			extract($select[0]);
 
-			if(isset($_POST['status']) && $_POST['status']=="Rejected"){
-				$comment = $_POST['comment'];
-				$req = $_POST['id'];
-				if(empty($comment)){
+			if (isset($_POST['status']) && $_POST['status']=="Rejected") {
+                $comment = $_POST['comment'];
+                $req = $_POST['id'];
+                if(empty($comment)){
 					$errors[] = "Please Enter comment for your Rejection";
 					FeedBack::errors($errors);
 				}else{
@@ -1774,16 +1760,11 @@ Class Requisition extends BeforeAndAfter{
 					Feedback::refresh(3, return_url()."requisition/requisition-list");
 					Feedback::success("Rejection Complete");
 				}
-			}else if(isset($_POST['send_btn'])){
-				$db = new Db();
-
-				$comment = $_POST['comment'];
-				
-
-				$req = $_POST['i'];
-
-				{
-					$insert = $db->insert("comment", 
+            } elseif (isset($_POST['send_btn'])) {
+                $db = new Db();
+                $comment = $_POST['comment'];
+                $req = $_POST['i'];
+                $insert = $db->insert("comment", 
 				[
 					"comment_from"=>user_id(),
 					"comment_to"=>$req_added_by,
@@ -1794,17 +1775,13 @@ Class Requisition extends BeforeAndAfter{
 					"comment_level"=>$req,
 				]
 				);
-				}
-
-				$level["req_app".$req."_user_id"]=user_id();
-				$level["req_app".$req."_designation_id"]=$this->ruf(user_id(), "user_designation");
-				$level["req_app".$req."_date"]=time();
-
-				$update = $db->update("requisition", $level, ["req_id"=>$req_id]);	
-				
-				//======== creating file ==============================
-				$list = array();
-				$list[] = array(
+                $level["req_app".$req."_user_id"]=user_id();
+                $level["req_app".$req."_designation_id"]=$this->ruf(user_id(), "user_designation");
+                $level["req_app".$req."_date"]=time();
+                $update = $db->update("requisition", $level, ["req_id"=>$req_id]);
+                //======== creating file ==============================
+                $list = array();
+                $list[] = array(
 					"Date",
 					"Item Code",
 					"Quantity",
@@ -1813,40 +1790,33 @@ Class Requisition extends BeforeAndAfter{
 					"Division",
 					"Req. No.",
 				);
-				
-				$db = new Db();
-			$select = $db->select("SELECT * FROM requisition WHERE req_id = '$req_id'");
-			extract($select[0]);
-			
-			$select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
-            $no = 1;
-            $total = 0;
-            foreach($select as $row){
-				extract($row);
-				$list[]=array(
-					date('d/M/Y', $req_date_added),
-					$ri_code,
-					$ri_quantity,
-					$ri_uom,
-					//$ri_price,
-					$this->rgf("approval_matrix", $req_division, "ap_id", "ap_code"),
-					$req_number,
-				);
-			}
-			
-
-				$fp = fopen('StoreRequisitions/'.$req_number.'.csv', 'w');
-
-				foreach ($list as $fields) {
+                $db = new Db();
+                $select = $db->select("SELECT * FROM requisition WHERE req_id = '$req_id'");
+                extract($select[0]);
+                $select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
+                $no = 1;
+                $total = 0;
+                foreach($select as $row){
+    				extract($row);
+    				$list[]=array(
+    					date('d/M/Y', $req_date_added),
+    					$ri_code,
+    					$ri_quantity,
+    					$ri_uom,
+    					//$ri_price,
+    					$this->rgf("approval_matrix", $req_division, "ap_id", "ap_code"),
+    					$req_number,
+    				);
+    			}
+                $fp = fopen('StoreRequisitions/'.$req_number.'.csv', 'w');
+                foreach ($list as $fields) {
 					fputcsv($fp, $fields);
 				}
-
-				fclose($fp);
-				//==================================================
-
-				if(!$db->error()){
+                fclose($fp);
+                //==================================================
+                if(!$db->error()){
 					$next =$this->nextApproval();
-					if(0){
+					if(0 !== 0){
 						$hod_name = $this->ruf($next, "user_othername");
 						$hod_telephone = $this->ruf($next, "user_telephone");
 						$hod_email = $this->ruf($next, "user_email");
@@ -1902,8 +1872,8 @@ Class Requisition extends BeforeAndAfter{
 
 				}else{
 					FeedBack::error($db->error());
-				}			
-			}
+				}
+            }
 			
 		
 			if($req_status != 1){
@@ -2028,8 +1998,9 @@ Class Requisition extends BeforeAndAfter{
                     echo '<span style="margin-left:20px;">Date: </span>';
                 echo '</td>';
                 echo '<td>';
-                if($req_app1_user_id)
-					echo '<span style="color:blue;position:absolute;left:10px;font-weight:bold;">'.Feedback::date_fm($req_app1_date).'</span>';
+                if ($req_app1_user_id) {
+                    echo '<span style="color:blue;position:absolute;left:10px;font-weight:bold;">'.Feedback::date_fm($req_app1_date).'</span>';
+                }
                 echo '__________________________________';
                 echo '</td>';
             echo '</tr>';
@@ -2041,8 +2012,9 @@ Class Requisition extends BeforeAndAfter{
                     echo '';
                 echo '</td>';
                 echo '<td>';
-                	if($req_app1_user_id)
-                		echo '<span style="color:blue;position:absolute;left:10px;font-weight:bold;">'.$this->rgf("designation", $req_app1_designation_id, "designation_id", "designation_name").'</span>';
+                	if ($req_app1_user_id) {
+                        echo '<span style="color:blue;position:absolute;left:10px;font-weight:bold;">'.$this->rgf("designation", $req_app1_designation_id, "designation_id", "designation_name").'</span>';
+                    }
                     echo '__________________________________';
                 echo '</td>';
                 echo '<td>';
@@ -2116,12 +2088,13 @@ Class Requisition extends BeforeAndAfter{
 			echo '<div style="padding-bottom:15px;" class="panel panel-success">';
 			echo '<ol style="color:#000;list-style:none;padding:0; margin:0;">';
 			foreach($xx as $row){
-				if($db->num_rows())
-					extract($row);				
+				if ($db->num_rows()) {
+                    extract($row);
+                }				
  
 					if($req_status == 0){
 						echo '<li style="border-bottom:1px solid #CCC;color:#000;padding:0 10px;"><h5>'.($i).'. Rejection ';
-						if($i>=1)echo ($i++);
+						echo ($i++);
 						echo '</h5></li>';
 						echo '<div style="padding:0 30px">';
 						echo '<b>Rejected by: </b>'.$this->full_name($rcm_added_by).'';
@@ -2133,7 +2106,7 @@ Class Requisition extends BeforeAndAfter{
 						echo '</div>';
 					}else{
 						echo '<li style="border-bottom:1px solid #CCC;color:#000;padding:0 10px;"><h5>'.($i).'. Revised copy ';
-						if($i>=1)echo ($i++);
+						echo ($i++);
 						echo '</h5></li>';
 						echo '<div style="padding:0 30px">';
 						echo '<b>Rejection by:</b> '.$this->full_name($rcm_added_by).'';
@@ -2171,29 +2144,25 @@ Class Requisition extends BeforeAndAfter{
 				
 				//echo '<br/><li style="border-bottom:1px solid #CCC;color:#000;padding:0 5px;"><b>'.$i.' . '.strtoupper($this->rgf("user_role", $app_role_id, "ur_id", "ur_name")).'</b></li>';
 				
-				if($i==1) $from = $this->hod($req_added_by);
-				$from = $this->rgf("sysuser", $app_role_id, "user_designation", "user_id"); 
-				//echo $from;
-				if(1){
-
-					//echo user_id()." == $tvr_driver_id";									
-					
-					$c = "req_app".$i."_user_id";
-					// if($i==1){
-					// 	$cb = "1";
-					// }else{
-					// 	$cb = ${"req_app".($i-1)."_user_id"};
-					// }
-					
-					// if(${"req_delegate".$i}){
-					// 	echo '<div>';
-					// 	echo '<span style="margin-left:25px;"><B>Delegated to: </B>'.$this->full_name(${"req_delegate".$i}).'</span>';
-					// 	echo ' &nbsp; &nbsp; ';
-					// 	echo '<span style="margin-left:25px;"><B>Delegated by: </B>'.$this->full_name($req_hod_id).'</span>';
-					// 	echo '</div>';
-					// }
-
-					if(empty($$c)){
+				if ($i==1) {
+                    $from = $this->hod($req_added_by);
+                }
+				$from = $this->rgf("sysuser", $app_role_id, "user_designation", "user_id");
+                //echo user_id()." == $tvr_driver_id";									
+                $c = "req_app".$i."_user_id";
+                // if($i==1){
+                // 	$cb = "1";
+                // }else{
+                // 	$cb = ${"req_app".($i-1)."_user_id"};
+                // }
+                // if(${"req_delegate".$i}){
+                // 	echo '<div>';
+                // 	echo '<span style="margin-left:25px;"><B>Delegated to: </B>'.$this->full_name(${"req_delegate".$i}).'</span>';
+                // 	echo ' &nbsp; &nbsp; ';
+                // 	echo '<span style="margin-left:25px;"><B>Delegated by: </B>'.$this->full_name($req_hod_id).'</span>';
+                // 	echo '</div>';
+                // }
+                if(empty($$c)){
 
 			// 			$w = $this->isApproval($user_id);
 			// ////${"req_app".$w."_user_id"};
@@ -2226,14 +2195,11 @@ Class Requisition extends BeforeAndAfter{
 							echo '<form action="" method="post" enctype="multipart/form-data">';
 							echo '<input type="hidden" value="'.$req_id.'" id="reqId">';
 							echo '<input type="hidden" name="return_id" value="'.$i.'"/>';
-
-							{
-								echo '<input name="status" checked="checked" type="radio" id="radio_7" value="Approved" class="radio-col-red" >';
-								echo '<label for="radio_7">Approve</label>';
-								echo '<input name="status" type="radio" id="radio_8" value="Rejected" class="radio-col-red">';
-								echo '<label for="radio_8">Reject</label>';
-								echo '</div>';
-							}
+                        echo '<input name="status" checked="checked" type="radio" id="radio_7" value="Approved" class="radio-col-red" >';
+                        echo '<label for="radio_7">Approve</label>';
+                        echo '<input name="status" type="radio" id="radio_8" value="Rejected" class="radio-col-red">';
+                        echo '<label for="radio_8">Reject</label>';
+                        echo '</div>';
 
 							echo '<input  type="hidden" value="'.$i.'" name="i"/>';
 
@@ -2241,9 +2207,7 @@ Class Requisition extends BeforeAndAfter{
 							echo '<textarea class="form-control" name="comment" id="comment"></textarea>';
 							echo '<br/>';
 
-							{
-								echo '<button type="button" id="approveBtn" class="btn btn-primary btn-xs" name="send_btn"><i class="fa fa-fw fa-save"></i> Post</button><span id="statusBtn"></span>';
-							}
+							echo '<button type="button" id="approveBtn" class="btn btn-primary btn-xs" name="send_btn"><i class="fa fa-fw fa-save"></i> Post</button><span id="statusBtn"></span>';
 							echo '</div>';
 							echo '</div>';
 
@@ -2266,7 +2230,9 @@ Class Requisition extends BeforeAndAfter{
 
 						$sql = "SELECT * FROM comment WHERE comment_to = '$req_added_by' AND comment_message != ''  AND comment_level = '$i' AND comment_type = 'REQ' AND comment_part_id = '$req_id'";
 						$select1 = $db->select($sql);
-						if($db->num_rows()) echo '<br/><b>Comment:</b><br/>';
+						if ($db->num_rows()) {
+                        echo '<br/><b>Comment:</b><br/>';
+                    }
 						foreach($select1 as $row){
 							extract($row);
 							echo nl2br($comment_message);
@@ -2275,8 +2241,6 @@ Class Requisition extends BeforeAndAfter{
 						echo '</div>';	
 						
 					}
-
-				}
 
 				echo '<div class="clearfix"></div>';
 
@@ -2304,36 +2268,28 @@ Class Requisition extends BeforeAndAfter{
 	public function rejected($user_id){
 		
 		$db = new db();
-		$num = 0;
-		
-		$select = $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 ");				
+        $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 ");				
 		return $db->num_rows();	
 	}
 
 	public function pending($user_id){
 		
 		$db = new db();
-		$num = 0;
-		
-		$select = $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 1 AND req_app1_date IS NULL ");				
+        $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 1 AND req_app1_date IS NULL ");				
 		return $db->num_rows();	
 	}
 
 	public function draft($user_id){
 		
 		$db = new db();
-		$num = 0;
-		
-		$select = $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = '-1' AND req_app1_date IS NULL ");				
+        $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = '-1' AND req_app1_date IS NULL ");				
 		return $db->num_rows();	
 	}
 
 	public function isApproved($user_id, $req_id){
 		
 		$db = new db();
-		$num = 0;
-		
-		$select = $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 AND req_date_added > ".MONTHS_ACTIVE);				
+        $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 AND req_date_added > ".MONTHS_ACTIVE);				
 		return $db->num_rows();	
 	}
 
@@ -2383,7 +2339,7 @@ Class Requisition extends BeforeAndAfter{
 
 		$sql = "SELECT * FROM requisition WHERE $leve AND req_id = '$req_id'";
 
-		$status = $u->select($sql);
+		$u->select($sql);
 		
 		if($u->num_rows()==1){
 			return true;

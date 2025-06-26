@@ -1,15 +1,18 @@
 <?php
+
+include_once __DIR__ . "/Exporter.inc";
 Class AreaOffice extends BeforeAndAfter{
 	public $page = "AREA OFFICE";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public function getLinks(){
 		$page = "AREA OFFICE";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Area Office", 
 				"link_address"=>"area-office/add-area-office",
@@ -25,8 +28,6 @@ Class AreaOffice extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function deleteAreaOfficeAction(){
@@ -65,7 +66,7 @@ Class AreaOffice extends BeforeAndAfter{
 				$errors[]="Area Office($area_office) already exists";
 			}
 
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->insert("area_office",["area_office_name"=>$area_office,"area_office_district_code_id"=>$district_code, "area_office_territory_id"=>"$territory","area_office_added_by"=>$user,"area_office_date_added"=>$time, "area_office_status"=>1, "area_office_cost_center"=>$cost_center]);
 								
 				
@@ -100,13 +101,18 @@ Class AreaOffice extends BeforeAndAfter{
 											$db = new Db();
 											$dc = $district_code;
 											$select = $db->select("SELECT * FROM district ORDER BY district_name");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
+												if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 												extract($row);
+												}
 												if($dc == $district_id){
 													echo '<option data-subtext="'.$district_name.' - '.$district_code.'" selected="selected" value="'.$district_id.'">'.$district_name.' - '.$district_code.'</option>';
 												}else{
 													echo '<option data-subtext="'.$district_name.' - '.$district_code.'" value="'.$district_id.'">'.$district_name.' - '.$district_code.'</option>';
 												}
+											}
 											}
 											?>
 										</select>
@@ -127,6 +133,8 @@ Class AreaOffice extends BeforeAndAfter{
 											<?php
 											$x = new Db();
 											$select = $x->select("SELECT * FROM territory WHERE territory_status = 1 ORDER BY territory_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
 												extract($row);
 												if($territory == $territory_id){
@@ -134,6 +142,7 @@ Class AreaOffice extends BeforeAndAfter{
 												}else{
 													echo '<option value="'.$territory_id.'">'.$territory_name.'</option> ';
 												}
+											}
 											}
 											?>
 										</select>
@@ -147,6 +156,7 @@ Class AreaOffice extends BeforeAndAfter{
 											<?php
 											$x = new Db();
 											$select = $x->select("SELECT cost_center_id, cost_center_name FROM cost_center ORDER BY cost_center_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
 												if($cost_center == $cost_center_id){
@@ -155,6 +165,7 @@ Class AreaOffice extends BeforeAndAfter{
 													echo '<option value="'.$cost_center_id.'">'.$cost_center_name.'</option> ';
 												}
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -177,7 +188,9 @@ Class AreaOffice extends BeforeAndAfter{
 		$id = portion(3);
 
 		$select = $db->select("SELECT * FROM area_office WHERE area_office_id = '$id'");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0][0]);
+		}
 
 		$cost_center = $area_office_cost_center;
 		$district_code = $area_office_district_code_id;
@@ -210,7 +223,7 @@ Class AreaOffice extends BeforeAndAfter{
 				$errors[]="Area Office($area_office) already exists";
 			}
 
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->update("area_office",["area_office_district_code_id"=>$district_code, "area_office_name"=>$area_office, "area_office_territory_id"=>"$territory","area_office_added_by"=>$user,"area_office_date_added"=>$time, "area_office_status"=>$status, "area_office_cost_center"=>$cost_center], ["area_office_id"=>$id]);								
 				
 				if(!$db->error()){
@@ -244,13 +257,17 @@ Class AreaOffice extends BeforeAndAfter{
 											$db = new Db();
 											$dc = $district_code;
 											$select = $db->select("SELECT * FROM district ORDER BY district_name");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
+												if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 												extract($row);
+												}
 												if($dc == $district_id){
 													echo '<option data-subtext="'.$district_name.' - '.$district_code.'" selected="selected" value="'.$district_id.'">'.$district_name.' - '.$district_code.'</option>';
 												}else{
 													echo '<option data-subtext="'.$district_name.' - '.$district_code.'" value="'.$district_id.'">'.$district_name.' - '.$district_code.'</option>';
 												}
+											}
 											}
 											?>
 										</select>
@@ -271,6 +288,8 @@ Class AreaOffice extends BeforeAndAfter{
 											<?php
 											$x = new Db();
 											$select = $x->select("SELECT * FROM territory WHERE territory_status = 1 ORDER BY territory_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
 												extract($row);
 												if($area_office_territory_id == $territory_id){
@@ -278,6 +297,7 @@ Class AreaOffice extends BeforeAndAfter{
 												}else{
 													echo '<option value="'.$territory_id.'">'.$territory_name.'</option> ';
 												}
+											}
 											}
 											?>
 										</select>
@@ -293,13 +313,19 @@ Class AreaOffice extends BeforeAndAfter{
 											<?php
 											$x = new Db();
 											$select = $x->select("SELECT cost_center_id, cost_center_name FROM cost_center ORDER BY cost_center_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
+												if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 												extract($row);
+												}
 												if($cost_center == $cost_center_id){
 													echo '<option selected="selected" value="'.$cost_center_id.'">'.$cost_center_name.'</option> ';
 												}else{
 													echo '<option value="'.$cost_center_id.'">'.$cost_center_name.'</option> ';
+											
 												}
+											}
 											}
 											?>
 										</select>
@@ -313,15 +339,17 @@ Class AreaOffice extends BeforeAndAfter{
 										<?php
 										echo '<select name="status">';
 
-										if($area_office_status == 0)
-											echo '<option value="0" selected="selected">'.$this->show2.'</option>';
-										else
-											echo '<option value="0">'.$this->show2.'</option>';
+										if ($area_office_status == 0) {
+                                            echo '<option value="0" selected="selected">'.$this->show2.'</option>';
+                                        } else {
+                                            echo '<option value="0">'.$this->show2.'</option>';
+                                        }
 
-										if($area_office_status == 1)
-											echo '<option value="1" selected="selected">'.$this->show1.'</option>';
-										else
-											echo '<option value="1">'.$this->show1.'</option>';
+										if ($area_office_status == 1) {
+                                            echo '<option value="1" selected="selected">'.$this->show1.'</option>';
+                                        } else {
+                                            echo '<option value="1">'.$this->show1.'</option>';
+                                        }
 										echo '</select>';
 										?>
 									</div>
@@ -381,8 +409,13 @@ Class AreaOffice extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 				foreach($select[0] as $row){
+					if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 					extract($row);
+					}
+				}
 					echo '<tr>';
 					echo '<td><center>'.($i++).'.</center></td>';
 					echo '<td>'.($area_office_name).'</td>';
@@ -402,10 +435,12 @@ Class AreaOffice extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','area-office/edit-area-office/'.$area_office_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page, 'D'))
-							echo $this->action('delete','area-office/delete-area-office/'.$area_office_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','area-office/edit-area-office/'.$area_office_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page, 'D')) {
+                            echo $this->action('delete','area-office/delete-area-office/'.$area_office_id, 'Delete');
+                        }
 						echo '</td>';
 					}
 					echo '</tr>';

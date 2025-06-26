@@ -5,11 +5,9 @@ class ActiveDirectory extends BeforeAndAfter{
 	
 	public function getLinks(){
 		
-		$links = array(
+		return array(
 			array()
 		);
-		
-		return $links;
 	}
 
     public function login($username, $password){
@@ -25,7 +23,9 @@ class ActiveDirectory extends BeforeAndAfter{
             $errors["message"] = "Could not Login, Contact Admin";
             $errors["status"] = False;
         }else{  
+            if (is_array($select) && isset($select[0]) && is_array($select[0])) {
             extract($select[0]);
+            }
 
             $errors["status"] = True;
             $errors["message"] = array(

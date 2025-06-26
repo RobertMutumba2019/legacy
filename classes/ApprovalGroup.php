@@ -5,17 +5,17 @@ Class ApprovalGroup extends BeforeAndAfter{
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-approval-group"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-approval-group") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-approval-group"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-approval-group") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 
 	public function id($id){
@@ -24,7 +24,8 @@ Class ApprovalGroup extends BeforeAndAfter{
 	
 	public static function getLinks(){
 		$page = "APPROVALGROUP";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Approver to Group", 
 				"link_address"=>"approvalgroup/add-approval-group",
@@ -47,15 +48,13 @@ Class ApprovalGroup extends BeforeAndAfter{
 				"link_right"=>"V",
 			),
 		);
-		
-		return $links;
 	}
 	
 	public function deleteApprovalGroupAction(){
 		$id = portion(3);
 		$db = new Db();
 		$apg_user = $this->rgf("approval_group", $id, "apg_id", "apg_user");
-		$update = $db->update("sysuser", ["user_role"=>1084], ["user_id"=>$apg_user]);
+		$db->update("sysuser", ["user_role"=>1084], ["user_id"=>$apg_user]);
 		$this->deletor("approval_group", "apg_id",  $id, 'approvalgroup/all-approval-group');
 	}
 
@@ -85,7 +84,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 				$errors[]="Group Name($groupname) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->insert("approval_group",["apg_date_added"=>time(),"apg_name"=>$groupname,"apg_user"=>$groupuser,"apg_added_by"=>user_id()]);
 				$update = $db->update("sysuser", ["user_role"=>1082], ["user_id"=>$groupuser]);
 				
@@ -117,17 +116,23 @@ Class ApprovalGroup extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="group" style="width:100%" class="select2" name="groupname">
 											<?php 
-											$uid = user_id();
+											user_id();
 											$db=new Db();
 											$select=$db->select("SELECT * FROM groups");
 											echo '<option value="">--- select ---</option>';
+											
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
-												if($groupname == $gr_id)
-													echo '<option selected value="'.$gr_id.'" >'.$gr_name.'</option>';
-												else
-													echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
+												if ($groupname == $gr_id) {
+                                                    echo '<option selected value="'.$gr_id.'" >'.$gr_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
+                                                }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -135,25 +140,36 @@ Class ApprovalGroup extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="user" style="width:100%" class="select3" name="groupuser">
 											<?php 
-											$uid = user_id();
+											user_id();
 											$db=new Db();
 											$existing_approvals = array();
 											$select = $db->select("SELECT apg_user FROM approval_group");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$existing_approvals[] = $apg_user;
 											}
+											}
 											$select=$db->select("SELECT * FROM sysuser ORDER BY user_surname ASC ");
 											echo '<option value="">--- select ---</option>';
+											
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if(!in_array($user_id, $existing_approvals))
 												{
-													if($groupuser == $user_id)
-														echo '<option selected value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
-													else
-														echo '<option value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
-												}
+													if ($groupuser == $user_id) {
+                                                        echo '<option selected value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
+                                                    }
+											
+													}	}
 											}
 											?>
 										</select>
@@ -174,12 +190,12 @@ Class ApprovalGroup extends BeforeAndAfter{
 	<?php
 	}
 	public function importApprovalGroupsAction(){
-		$id = portion(3);
+		portion(3);
 		$db = new Db();
 
 		$db = new Db();
-		$time = time();
-		$user = user_id();
+		time();
+		user_id();
 		$errors = array();
 		if (isset($_POST['uploaddata'])) { 
 			$filename=$_FILES["uploadFile"]["tmp_name"];
@@ -194,15 +210,15 @@ Class ApprovalGroup extends BeforeAndAfter{
 					//echo $col_1;
 					if($count == 1){
 						//echo "$col_1 is equal to $valid_name";
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
-						if(empty($col_2)){
+						if($col_2 === '' || $col_2 === '0'){
 							$errors[] = "Cell <b>B".$count."</b> should not be empty";
 						}
 
@@ -212,7 +228,11 @@ Class ApprovalGroup extends BeforeAndAfter{
 						$col_1 = (int)$col_1;
 						$sql = "SELECT user_id FROM sysuser WHERE check_number = '$col_1'";
 						$s = $d->select($sql);
-						if($d->num_rows()) extract($s[0]);
+						if ($d->num_rows()) {
+							if (is_array($s) && isset($s[0]) && is_array($s[0])) {
+                            extract($s[0]);
+							}
+                        }
 						
 						$col_21 = $this->rgf("groups", $col_2, "gr_name", "gr_id");				
 
@@ -231,7 +251,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -246,8 +266,11 @@ Class ApprovalGroup extends BeforeAndAfter{
 							
 							$col_1 = (int)$col_1;
 							$s = $d->select("SELECT user_id AS col_1 FROM sysuser WHERE check_number = '$col_1'");
-							if($d->num_rows())
-							extract($s[0]);
+							if ($d->num_rows()) {
+								if (is_array($s) && isset($s[0]) && is_array($s[0])) {
+                                extract($s[0]);
+								}
+                            }
 							$db->insert("approval_group",["apg_date_added"=>time(),"apg_name"=>$col_2,"apg_user"=>$col_1,"apg_added_by"=>user_id()]);
 							$update = $db->update("sysuser", ["user_role"=>1082], ["user_id"=>$col_1]);
 						}
@@ -290,7 +313,9 @@ Class ApprovalGroup extends BeforeAndAfter{
 		$id = $this->id;
 		$db=new Db();
 		$select=$db->select("select * from approval_group WHERE apg_id ='$id'");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+		}
 		$groupname = $apg_name;
 		$groupuser = $apg_user;
 
@@ -313,7 +338,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 			// }
 
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->update("approval_group",["apg_date_added"=>time(),"apg_name"=>$groupname,"apg_user"=>$groupuser,"apg_added_by"=>user_id()],["apg_id"=>$id]);
 				
 				if(empty($db->error())){
@@ -344,24 +369,35 @@ Class ApprovalGroup extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="group" class="select3" style="width:100%;" name="groupname">
 											<?php 
-											$uid = user_id();
+											user_id();
 
 											$existing_approvals = array();
 											$select = $db->select("SELECT apg_user FROM approval_group where apg_user != '$apg_user'");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$existing_approvals[] = $apg_user;
+											}
 											}
 
 											$db=new Db();
 											$select=$db->select("SELECT * FROM groups");
 											echo '<option value="">--- select ---</option>';
+											
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
-												if($groupname == $gr_id)
-													echo '<option selected value="'.$gr_id.'" >'.$gr_name.'</option>';
-												else
-													echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
+												if ($groupname == $gr_id) {
+                                                    echo '<option selected value="'.$gr_id.'" >'.$gr_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
+                                                }
+											}
 											}
 											?>
 										</select>
@@ -370,18 +406,23 @@ Class ApprovalGroup extends BeforeAndAfter{
 									<div class="form-line">
 										<select id="user" class="select3" style="width:100%;" name="groupuser">
 											<?php 
-											$uid = user_id();
+											user_id();
 											$db=new Db();
 											$select=$db->select("SELECT * FROM sysuser");
 											echo '<option value="">--- select ---</option>';
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if(!in_array($user_id, $existing_approvals)){
-													if($groupuser == $user_id)
-														echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
-													else
-														echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+													if ($groupuser == $user_id) {
+                                                        echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                    } else {
+                                                        echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                    }
 												}
+											}
 											}
 											?>
 										</select>
@@ -403,7 +444,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 	}
 
 	public function AllApprovalGroupAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -512,7 +553,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 	
 	
 	public function sdsdAllApprovalGroupActionrewrwer(){
-	$access = new AccessRights();
+	new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -547,6 +588,9 @@ Class ApprovalGroup extends BeforeAndAfter{
 
 				$i=1;
 				echo '<tbody>';
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -571,6 +615,8 @@ Class ApprovalGroup extends BeforeAndAfter{
 						$user_surname.' '.$user_othername,
 						FeedBack::date_fm($apg_date_added),					
 					); 
+				
+				}
 
 				}
 				echo '</tbody>';

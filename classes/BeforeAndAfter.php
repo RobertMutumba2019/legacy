@@ -87,28 +87,39 @@ class BeforeAndAfter{
 	    $year = (int)portion(3);
 	    $month = (int)portion(4);
 
-	    if(empty($year)) $year = date('Y');
-	    if(empty($month)) $month = date('m');
+	    if ($year === 0) {
+            $year = date('Y');
+        }
+	    if ($month === 0) {
+            $month = date('m');
+        }
 
 	    for($i=2020; $i<=date('Y'); $i++){
-	    	if($i==2020) echo 'Years: > ';
-	    	if($year == $i)
-	    		echo '<span style="font-size:12px; padding:0 5px; margin:2px; font-weight:bold;">'.($i).'</span>';
-	    	else
-	    		echo '<a href="'.return_url().$class.'/'.$method.'/'.$i.'/'.$month.'" class="btn btn-sm" style="font-size:12px; padding:0 5px; margin:2px;">'.($i).'</a>';
+	    	if ($i==2020) {
+                echo 'Years: > ';
+            }
+	    	if ($year == $i) {
+                echo '<span style="font-size:12px; padding:0 5px; margin:2px; font-weight:bold;">'.($i).'</span>';
+            } else {
+                echo '<a href="'.return_url().$class.'/'.$method.'/'.$i.'/'.$month.'" class="btn btn-sm" style="font-size:12px; padding:0 5px; margin:2px;">'.($i).'</a>';
+            }
 
 	    	
 	    }
 	    echo '<br/>';
     	for($j=1; $j<=12; $j++){
-    		if($j==1) echo 'Months: > ';
-    		if($month == $j)
-    			echo '<span style="font-size:12px; padding:0 5px; margin:2px; font-weight:bold;">'.$this->month_name_short($j).'</span>';
-    		else
-    			echo '<a href="'.return_url().$class.'/'.$method.'/'.$year.'/'.$j.'" class="btn btn-sm" style="font-size:12px; padding:0 5px; margin:2px;">'.$this->month_name_short($j).'</a>';
+    		if ($j==1) {
+                echo 'Months: > ';
+            }
+    		if ($month == $j) {
+                echo '<span style="font-size:12px; padding:0 5px; margin:2px; font-weight:bold;">'.$this->month_name_short($j).'</span>';
+            } else {
+                echo '<a href="'.return_url().$class.'/'.$method.'/'.$year.'/'.$j.'" class="btn btn-sm" style="font-size:12px; padding:0 5px; margin:2px;">'.$this->month_name_short($j).'</a>';
+            }
 
-    		if(date('Y')==$year && date('m')==$j)
-    			break;
+    		if (date('Y')==$year && date('m')==$j) {
+                break;
+            }
     	}
     	echo '<div class="clearfix" style="margin-top:10px;"></div>';
 
@@ -151,7 +162,7 @@ class BeforeAndAfter{
 	
 	public function levels(){
 		$db = new Db();
-		$select = $db->select("SELECT app_id FROM approval_order WHERE app_role_id != '0'");
+		$db->select("SELECT app_id FROM approval_order WHERE app_role_id != '0'");
 		return $db->num_rows();		
 	}
 	
@@ -160,7 +171,7 @@ class BeforeAndAfter{
 
 		$t = $this->isDelegate($user_id, time());
 
-		if(count($t)){
+		if(count($t) > 0){
 			$user_id = $t['by'];
 			// echo '<pre>';
 			// print_r($t);
@@ -173,8 +184,10 @@ class BeforeAndAfter{
 		
 		if($db->num_rows()==0){
 			return 0;			
-		}else{			
+		}else{	
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {		
 			extract($select[0]);
+			}
 			return $app_id;			
 		}
 		
@@ -184,14 +197,17 @@ class BeforeAndAfter{
 		
 		$type = strtolower($type);
 		
-		if($type == "edit")
-			return '<a href="'.return_url().$link.'" class="btn btn-xs btn-success" style="margin:0 2px;">'.$word.'</a>';
+		if ($type === "edit") {
+            return '<a href="'.return_url().$link.'" class="btn btn-xs btn-success" style="margin:0 2px;">'.$word.'</a>';
+        }
 		
-		if($type == "delete")
-			return '<a href="'.return_url().$link.'" class="btn btn-xs btn-danger" style="margin:0 2px;">'.$word.'</a>';
+		if ($type === "delete") {
+            return '<a href="'.return_url().$link.'" class="btn btn-xs btn-danger" style="margin:0 2px;">'.$word.'</a>';
+        }
 		
-		if($type == "view")
-			return '<a href="'.return_url().$link.'" class="btn btn-xs btn-warning"> '.$word.'</a>';
+		if ($type === "view") {
+            return '<a href="'.return_url().$link.'" class="btn btn-xs btn-warning"> '.$word.'</a>';
+        }
 			
 		return 'none';
 	}
@@ -206,22 +222,31 @@ class BeforeAndAfter{
 		$db = new Db();
 		$row = $db->select("SELECT user_surname, user_othername FROM sysuser WHERE user_id = '$id'");
 		$db->error();
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		return ucwords(strtolower($row[0]['user_surname'].' '.$row[0]['user_othername']));
-	}
+	    }
+    }
+
 	//return user field
 	public function ruf($id, $column){
 		$db = new Db();
 		$row = $db->select("SELECT $column FROM sysuser WHERE user_id = '$id'");
 		echo $db->error();
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		return $row[0][$column];
+		}
 	}
+
 	//return generic field from generic table
 	public function rgf($table, $id, $look_up, $column){
 		$db = new Db();
 		$sql = "SELECT $column FROM $table WHERE $look_up = '$id' ";
 		$row = @$db->select($sql);
 		echo $db->error();
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+
 		return @$row[0][$column];
+		}
 	}
 
 	public function rgf22($table, $id, $look_up, $column){
@@ -229,7 +254,9 @@ class BeforeAndAfter{
 		echo $sql = "SELECT $column FROM $table WHERE $look_up = '$id' ";
 		$row = @$db->select($sql);
 		echo $db->error();
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		return @$row[0][$column];
+		}
 	}
 
 	//return distinct field from generic table
@@ -248,18 +275,23 @@ class BeforeAndAfter{
 	protected function hod_delegate($id){
 		$db = new Db();
 		$row = $db->select("SELECT user_branch_id FROM sysuser WHERE user_id = '$id'");
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		$user_branch = $row[0]['user_branch_id'];
+		}
 		$hod = static_hod_id();
 		$b = new Db();
 
 		//echo "SELECT user_id FROM sysuser WHERE user_role = '$hod' AND user_branch_id = '$user_branch'";
 		$bb = $b->select("SELECT user_id FROM sysuser WHERE user_role = '$hod' AND user_branch_id = '$user_branch'");					
+		if (is_array($bb) && isset($bb[0]) && is_array($bb[0])) {
 		extract($bb[0]);
-		$user_id;
+        }
 
 		$d = $this->myDelegate($user_id, time());	
 		
-		if($d['delegate']) $user_id = $d['delegate'];	
+		if ($d['delegate']) {
+            $user_id = $d['delegate'];
+        }	
 
 		return $user_id;
 	}
@@ -267,33 +299,34 @@ class BeforeAndAfter{
 		$db = new Db();
 		$row = $db->select("SELECT dept_name FROM department WHERE dept_id = '$id'");
 		echo $db->error();
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
 		return $row[0]['dept_name'];
+		}
 	}
 	
 	protected function sec_name($id){
 		$db = new Db();
 		$row = $db->select("SELECT section_name FROM section WHERE section_id = '$id'");
 		echo $db->error();
-		return $row[0]['section_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['section_name'];}
 	}
 	
 	protected function hod_id($id){
 		$db = new Db();
 		$row = $db->select("SELECT hod_user_id FROM hod WHERE hod_dept_id = '$id'");
 		echo $db->error();
-		return @$row[0]['hod_user_id'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return @$row[0]['hod_user_id'];}
 	}
 	
 	public function total($table, $column="", $column_value=""){
 		//echo "SELECT * FROM $table WHERE $column = '$column_value'";
 		$db = new Db();
 
-		if(empty($column))
-			$sql = ("SELECT * FROM $table");
-		else
-			$sql = ("SELECT * FROM $table WHERE $column = '$column_value'");
+		$sql = empty($column) ? "SELECT * FROM $table" : "SELECT * FROM $table WHERE $column = '$column_value'";
 		
-		$row = $db->select($sql);
+		$db->select($sql);
 		$db->num_rows();
 		echo $db->error();
 		return @$db->num_rows();
@@ -304,53 +337,56 @@ class BeforeAndAfter{
 		$db = new Db();
 		$row = $db->select("SELECT branch_name FROM branch WHERE branch_id = '$id'");
 		echo $db->error();
-		return $row[0]['branch_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['branch_name'];}
 	}
 	
 	protected function grade($id){
 		$db = new Db();
 		$row = $db->select("SELECT grade FROM users WHERE user_id = $id limit 1");
-		
-		return $row[0]['grade'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['grade'];}
 	}
 	protected function staff_code($id){
 		$db = new Db();
 		$row = $db->select("SELECT staff_code FROM users WHERE user_id = $id limit 1");
-		
-		return $row[0]['staff_code'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['staff_code'];}
 	}
 	
 	
 	protected function role_id($id){
 		$db = new Db();
 		$row = $db->select("SELECT users.role_id as role_id FROM users, roles WHERE users.user_id = $id AND users.role_id = roles.role_id limit 1");
-		
-		return $row[0]['role_id'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['role_id'];}
 	}
 	
 	protected function role_name($id){
 		$db = new Db();
 		$row = $db->select("SELECT role_name FROM users, roles WHERE users.user_id = $id AND users.role_id = roles.role_id limit 1");
-		
-		return $row[0]['role_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['role_name'];}
 	}
 	
 	protected function designation_name($id){
 		$db = new Db();
 		$row = $db->select("SELECT designation_name FROM designation WHERE designation_id = '$id'");
 		echo $db->error();
-		return $row[0]['designation_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['designation_name'];}
 	}
 	
 	protected function requestor_id($id){
 		$db = new Db();
 		$row = $db->select("SELECT vr_requestor_id FROM vehicle_request WHERE vr_id = '$id'");
 		echo $db->error();
-		return $row[0]['vr_requestor_id'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['vr_requestor_id'];}
 	}
 	
 	public function rejector($table, $column_name=array(), $column_prefix=array()){
-		$u = new Db();
+		new Db();
 		
 		foreach ($column_name as $key => $value) {
 			$column_name_and_value = $key.'='.$value.'';
@@ -369,7 +405,7 @@ class BeforeAndAfter{
 		$sql = "UPDATE $table SET $levs WHERE $column_name_and_value";
 
 		$db = new Db();
-		$update = $db->query($sql);
+		$db->query($sql);
 	}
 
 
@@ -380,7 +416,8 @@ class BeforeAndAfter{
 		$sql = "SELECT del_to, del_start_date,del_added_by, del_end_date FROM delegation WHERE del_added_by = '$user_id' AND del_start_date <= '$time' AND del_end_date >= '$time' ORDER BY del_start_date ASC";
 		$select = $db->select($sql);
 		if($db->num_rows()){
-			extract($select[0]);
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+			extract($select[0]);}
 		}
 
 		$duration = ceil(((int)$del_end_date-(int)$del_start_date)/(24*60*60));
@@ -395,7 +432,9 @@ class BeforeAndAfter{
 		$select = $db->select($sql);
 
 		if($db->num_rows()){
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 			extract($select[0]);
+			}
 			$duration = ceil(((int)$del_end_date-(int)$del_start_date)/(24*60*60));	
 		
 			return array('delegate'=>$del_to, 'from'=>$del_start_date, 'to'=>$del_end_date ,'duration'=>$duration, 'by'=>$del_added_by);
@@ -413,22 +452,24 @@ class BeforeAndAfter{
 		}else{
 			$row = $db->select("SELECT dp_name FROM users, department WHERE users.user_id = $id AND users.user_dp_id = department.dp_id limit 1");
 		}
-		
-		return $row[0]['dp_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return $row[0]['dp_name'];}
 	}
+
 
 
 	public function nextApproval(){
 		$next = $this->isApproval(user_id());
 		if($next < $this->levels()){
-			$next = $next+1;
+			$next += 1;
 			$db = new Db();
 			$select = $db->select("SELECT app_role_id FROM approval_order WHERE app_id = '$next'");
 
 			if($db->num_rows()==0){					
 				$app_role_id = 0;			
-			}else{			
-				extract($select[0]);			
+			}else{
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {			
+				extract($select[0]);}
 			}
 
 			return $this->rgf("sysuser", $app_role_id, "user_role", "user_id");
@@ -455,15 +496,15 @@ class BeforeAndAfter{
 	public function department_id($id){
 		$db = new Db();
 		$row = $db->select("SELECT user_dp_id FROM users WHERE users.user_id = $id limit 1");
-		
-		return @$row[0]['user_dp_id'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return @$row[0]['user_dp_id'];}
 	}
 
 	public function cost_center1($id){
 		$db = new Db();
 		$row = $db->select("SELECT cost_center_name FROM cost_center WHERE cost_center_id = '$id'");
-		
-		return @$row[0]['cost_center_name'];
+		if (is_array($row) && isset($row[0]) && is_array($row[0])) {
+		return @$row[0]['cost_center_name'];}
 	}
 
 	public function isThere($table, $params = array()){
@@ -475,7 +516,7 @@ class BeforeAndAfter{
 
 		$all_vals = implode(' AND ', $vals);
 
-		$select = $db->select("SELECT * FROM $table WHERE $all_vals;");
+		$db->select("SELECT * FROM $table WHERE $all_vals;");
 
 		if($db->num_rows()){
 			return true;
@@ -495,16 +536,12 @@ class BeforeAndAfter{
 		foreach ($params as $key => $value) {
 			$i++;
 			
-			if($all == $i){
-				$vals[] = "$key != '$value'";
-			}else{
-				$vals[] = "$key = '$value'";
-			}
+			$vals[] = $all == $i ? "$key != '$value'" : "$key = '$value'";
 		}
 
 		$all_vals = implode(' AND ', $vals);
 		//echo "SELECT * FROM $table WHERE $all_vals;";
-		$select = $db->select("SELECT * FROM $table WHERE $all_vals;");
+		$db->select("SELECT * FROM $table WHERE $all_vals;");
 
 		if($db->num_rows()){
 			return true;
@@ -581,20 +618,6 @@ class BeforeAndAfter{
 
 	public function period($date){
 
-		$mo = array(
-			"JAN"=>"07",
-			"FEB"=>"08",
-			"MAR"=>"09",
-			"APR"=>"10",
-			"MAY"=>"11",
-			"JUN"=>"12",
-			"JUL"=>"01",
-			"AUG"=>"02",
-			"SEP"=>"03",
-			"OCT"=>"04",
-			"NOV"=>"05",
-			"DEC"=>"06", 
-		);
 		$p = strtotime("+6 months", $date);
 		return date("m/Y", $p);
 	}
@@ -604,7 +627,8 @@ class BeforeAndAfter{
 		$select = $db->select("SELECT TOP 1 dl_unlock_date FROM driver_lock WHERE dl_driver_id = '$driver_id' ORDER BY dl_lock_date DESC");
 
 		if($db->num_rows()){
-			extract($select[0]);
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+			extract($select[0]);}
 			
 			if(empty($dl_unlock_date)){
 				return 0;

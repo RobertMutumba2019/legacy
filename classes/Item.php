@@ -1,22 +1,24 @@
 <?php
+include_once __DIR__ . "/Exporter.inc";
 Class Item extends BeforeAndAfter{
 
-	public $page = "ITEM";
+	public $page2;
+    public $page = "ITEM";
 
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-item"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-item") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-item"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-item") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 	
 	public function deleteItemsAction(){
@@ -31,7 +33,8 @@ Class Item extends BeforeAndAfter{
 	
 	public function getLinks(){
 		$page = "ITEM";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Item", 
 				"link_address"=>"item/add-item",
@@ -54,8 +57,6 @@ Class Item extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function importItemsAction(){
@@ -76,17 +77,17 @@ Class Item extends BeforeAndAfter{
 					$col_3 = @strtoupper(trim(str_replace("'","\'",strip_tags($emapData[2]))));
 					if($count == 1){
 						//echo "$col_1 is equal to $valid_name";
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
-						}elseif(empty($col_2)){
+						}elseif($col_2 === '' || $col_2 === '0'){
 							$errors[] = "Cell <b>B".$count."</b> should not be empty";
 						}
-						elseif(empty($col_3)){
+						elseif($col_3 === '' || $col_3 === '0'){
 							$errors[] = "Cell <b>C".$count."</b> should not be empty";
 						}
 
@@ -101,7 +102,7 @@ Class Item extends BeforeAndAfter{
 				}
 				fclose($file);
 
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -169,7 +170,7 @@ Class Item extends BeforeAndAfter{
 			// 	$errors[]="department($department) already exists";
 			// }
 				
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->insert("item",["item_date_added"=>$time,"item_code"=>$itemcode,"item_name"=>$itemname,"item_unit_of_measure"=>$unitmeasure,"item_added_by"=>$user,]);
 				
 				if($x){
@@ -232,7 +233,7 @@ Class Item extends BeforeAndAfter{
 	}
 	
 	public function AllitemAction(){
-	$access = new AccessRights();
+	new AccessRights();
 	?>
 		<div class="col-md-12">
 			<h3>Item List</h3>
@@ -258,6 +259,7 @@ Class Item extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -271,6 +273,8 @@ Class Item extends BeforeAndAfter{
 							echo $this->action('edit','item/edit-item/'.$item_id, 'Edit');
 							echo $this->action('delete','item/delete-items/'.$item_id, 'Delete');
 					echo '</td>';
+				
+				}
 
 				}
 				echo '</tbody>';
@@ -297,8 +301,9 @@ Class Item extends BeforeAndAfter{
 		$id = portion(3);
 		$db = new Db();
 		$select = $db->select("SELECT * FROM item WHERE item_id ='$id'");
-		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0][0]);
+		}
             if(isset($_POST['submit'])){
 			$itemcode = $_POST['itemcode'];
 			$itemname = $_POST['itemname'];
@@ -321,7 +326,7 @@ Class Item extends BeforeAndAfter{
 			// 	$errors[]="department($department) already exists";
 			// }
 				
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->update("item",["item_date_added"=>$time,"item_code"=>$itemcode,"item_name"=>$itemname,"item_unit_of_measure"=>$unitmeasure,"item_added_by"=>$user],["item_id"=>$id]);
 				
 				if($x){
@@ -403,7 +408,7 @@ Class Item extends BeforeAndAfter{
 			if($this->isThere("section", ["section_name"=>$section])){
 				$errors[]="section($section) already exists";
 			}
-			if(empty($errors)){
+			if($errors === []){
 		
 				$x = $db->insert("section",["section_date_added"=>$time,"section_dept_id"=>$department_id, "section_name"=>$section,"section_added_by"=>$user, "section_status"=>1]);
 				echo $db->error();
@@ -444,12 +449,15 @@ Class Item extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_status = 1 ORDER BY dept_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
-												if($dept_id == $department_id)
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($dept_id == $department_id) {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
+											}
 											}
 											?>
 										</select>
@@ -489,7 +497,7 @@ Class Item extends BeforeAndAfter{
 			if($this->isThereEdit("section", ["section_name"=>$section,"section_id"=>$id])){
 				$errors[]="section($section) already exists";
 			}
-			if(empty($errors)){
+			if($errors === []){
 		
 				$x = $db->update("section",["section_date_added"=>$time,"section_dept_id"=>$department_id, "section_name"=>$section, "section_added_by"=>$user, "section_status"=>$status ],["section_id"=>$id]);
 				echo $db->error();
@@ -530,13 +538,17 @@ Class Item extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_status = 1 ORDER BY dept_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
-												if($section_dept_id == $dept_id)
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($section_dept_id == $dept_id) {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -548,15 +560,17 @@ Class Item extends BeforeAndAfter{
 										<?php
 										echo '<select name="status">';
 
-										if($section_status == 0)
-											echo '<option value="0" selected="selected">'.$this->show2.'</option>';
-										else
-											echo '<option value="0">'.$this->show2.'</option>';
+										if ($section_status == 0) {
+                                            echo '<option value="0" selected="selected">'.$this->show2.'</option>';
+                                        } else {
+                                            echo '<option value="0">'.$this->show2.'</option>';
+                                        }
 
-										if($section_status == 1)
-											echo '<option value="1" selected="selected">'.$this->show1.'</option>';
-										else
-											echo '<option value="1">'.$this->show1.'</option>';
+										if ($section_status == 1) {
+                                            echo '<option value="1" selected="selected">'.$this->show1.'</option>';
+                                        } else {
+                                            echo '<option value="1">'.$this->show1.'</option>';
+                                        }
 										echo '</select>';
 										?>
 									</div>
@@ -613,6 +627,7 @@ Class Item extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -632,12 +647,15 @@ Class Item extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page2, 'E') || $access->sectionAccess(user_id(), $this->page2, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page2, 'E'))
-							echo $this->action('edit','department/edit-section/'.$section_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page2, 'D'))
-							echo $this->action('delete','department/delete-section/'.$section_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page2, 'E')) {
+                            echo $this->action('edit','department/edit-section/'.$section_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page2, 'D')) {
+                            echo $this->action('delete','department/delete-section/'.$section_id, 'Delete');
+                        }
 						echo '</td>';
 					}
+				}
 					echo '</tr>';
 					
 					//////////////////////////////////REPORT STEP 2//////////////////////////////////	

@@ -1,6 +1,6 @@
 <?php 
 
-include __DIR__ . "/classes/init.php";
+include_once __DIR__ . "/classes/init.php";
 
 error_reporting(null);
 
@@ -13,8 +13,10 @@ if(empty($user_id)){
 $db = new Db();
 $sql = "SELECT * FROM sysuser WHERE user_id = '$user_id'";
 $select = $db->select($sql);
-extract($select[0]);
 
+if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+extract($select[0]);
+}
 if(time() - $user_last_active > 30*60){
     //echo '<script>alert("Timeout You have been inactive for 1 minute");</script>';
     Feedback::error('<h1><center>Time Out<br/> You have been inactive for morethan 5 Minutes</center></h1>');

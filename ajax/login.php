@@ -1,6 +1,7 @@
 <?php
 error_reporting(null);
-include(__DIR__ . "/../classes/init.inc"); 
+
+include_once __DIR__ . "/classes/init.php";	
 $system_name = "CENTENARY";
 $xx = array(); 
 if(1 !== 0){
@@ -44,7 +45,9 @@ if(1 !== 0){
                 $select = $db->select("SELECT * FROM sysuser WHERE user_email = '$email' AND user_id = '$user_id'");
 
                 if($db->num_rows()){
+                    if (is_array($select) && isset($select[0]) && is_array($select[0])) {
                     extract($select[0]);
+                    }
                 }else{                      
                     $time = time();          
                     $db->insert("sysuser", [
@@ -65,7 +68,9 @@ if(1 !== 0){
 
                     $select = $db->select("SELECT * FROM sysuser WHERE user_email = '$email'");
                     if($db->num_rows()){
+                        if (is_array($select) && isset($select[0]) && is_array($select[0])) {
                         extract($select[0]);
+                        }
                     }
                 }
 

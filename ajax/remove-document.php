@@ -1,5 +1,6 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+
+include_once __DIR__ . "/classes/init.php";	
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 $attach_id = $_POST['attachmentID'];
@@ -10,7 +11,9 @@ if(empty($user_id)){
 
 $db = new Db();
 $select = $db->select("SELECT at_path FROM attachments WHERE at_id = '$attach_id'");
+if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 extract($select[0]);
+}
 $return_url = return_url();
 echo $at_path;
 

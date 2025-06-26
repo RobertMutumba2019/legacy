@@ -1,6 +1,6 @@
 <?php
 error_reporting(null);
-include(__DIR__ . "/../classes/init.inc");	
+include_once __DIR__ . "/classes/init.inc";	
 $t = new BeforeAndAfter();	
 
 			$groupname = $_POST['groupname'];

@@ -1,5 +1,5 @@
 <?php
-include __DIR__ . "/Exporter.inc";
+include_once __DIR__ . "/Exporter.inc";
 $x = new Exporter();
 $export_type = $_POST['export_type'];
 $db_values = $_POST['db_values'];

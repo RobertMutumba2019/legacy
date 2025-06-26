@@ -117,6 +117,10 @@ Class ApprovalGroup extends BeforeAndAfter{
 											$db=new Db();
 											$select=$db->select("SELECT * FROM groups");
 											echo '<option value="">--- select ---</option>';
+											
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if ($groupname == $gr_id) {
@@ -124,6 +128,7 @@ Class ApprovalGroup extends BeforeAndAfter{
                                                 } else {
                                                     echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
                                                 }
+											}
 											}
 											?>
 										</select>
@@ -136,12 +141,21 @@ Class ApprovalGroup extends BeforeAndAfter{
 											$db=new Db();
 											$existing_approvals = array();
 											$select = $db->select("SELECT apg_user FROM approval_group");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$existing_approvals[] = $apg_user;
 											}
+										    }
 											$select=$db->select("SELECT * FROM sysuser ORDER BY user_surname ASC ");
 											echo '<option value="">--- select ---</option>';
+											
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if(!in_array($user_id, $existing_approvals))
@@ -150,7 +164,9 @@ Class ApprovalGroup extends BeforeAndAfter{
                                                         echo '<option selected value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
                                                     } else {
                                                         echo '<option value="'.$user_id.'" >'.$check_number.' - '.$user_surname.' '.$user_othername.'</option>';
-                                                    }
+													        }
+											        }
+											
 												}
 											}
 											?>
@@ -207,7 +223,9 @@ Class ApprovalGroup extends BeforeAndAfter{
 						$sql = "SELECT user_id FROM sysuser WHERE check_number = '$col_1'";
 						$s = $d->select($sql);
 						if ($d->num_rows()) {
+							if (is_array($s) && isset($s[0]) && is_array($s[0])) {
                             extract($s[0]);
+							}
                         }
 						
 						$col_21 = $this->rgf("groups", $col_2, "gr_name", "gr_id");				
@@ -243,7 +261,9 @@ Class ApprovalGroup extends BeforeAndAfter{
 							$col_1 = (int)$col_1;
 							$s = $d->select("SELECT user_id AS col_1 FROM sysuser WHERE check_number = '$col_1'");
 							if ($d->num_rows()) {
+								if (is_array($s) && isset($s[0]) && is_array($s[0])) {
                                 extract($s[0]);
+								}
                             }
 							$db->insert("approval_group",["apg_date_added"=>time(),"apg_name"=>$col_2,"apg_user"=>$col_1,"apg_added_by"=>user_id()]);
 							$update = $db->update("sysuser", ["user_role"=>1082], ["user_id"=>$col_1]);
@@ -256,6 +276,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 					}else{
 						FeedBack::error($errors);
 					}
+
 				}else{
 					FeedBack::errors($errors);
 				}
@@ -286,7 +307,10 @@ Class ApprovalGroup extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from approval_group WHERE apg_id ='$id'");
+		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+		}
 		$groupname = $apg_name;
 		$groupuser = $apg_user;
 
@@ -344,21 +368,32 @@ Class ApprovalGroup extends BeforeAndAfter{
 
 											$existing_approvals = array();
 											$select = $db->select("SELECT apg_user FROM approval_group where apg_user != '$apg_user'");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$existing_approvals[] = $apg_user;
 											}
+										    }
 
 											$db=new Db();
 											$select=$db->select("SELECT * FROM groups");
 											echo '<option value="">--- select ---</option>';
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if ($groupname == $gr_id) {
                                                     echo '<option selected value="'.$gr_id.'" >'.$gr_name.'</option>';
                                                 } else {
                                                     echo '<option value="'.$gr_id.'" >'.$gr_name.'</option>';
-                                                }
+                                            
+											
+												}
+											}
 											}
 											?>
 										</select>
@@ -371,6 +406,10 @@ Class ApprovalGroup extends BeforeAndAfter{
 											$db=new Db();
 											$select=$db->select("SELECT * FROM sysuser");
 											echo '<option value="">--- select ---</option>';
+
+											if(is_array($select)){
+
+											
 											foreach ($select as $row) {
 												extract($row);
 												if(!in_array($user_id, $existing_approvals)){
@@ -380,6 +419,7 @@ Class ApprovalGroup extends BeforeAndAfter{
                                                         echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
                                                     }
 												}
+											    }
 											}
 											?>
 										</select>
@@ -541,6 +581,10 @@ Class ApprovalGroup extends BeforeAndAfter{
 
 				$i=1;
 				echo '<tbody>';
+
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -565,6 +609,7 @@ Class ApprovalGroup extends BeforeAndAfter{
 						$user_surname.' '.$user_othername,
 						FeedBack::date_fm($apg_date_added),					
 					); 
+				}
 
 				}
 				echo '</tbody>';

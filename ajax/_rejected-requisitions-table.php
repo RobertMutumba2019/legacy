@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 $attach_id = $_POST['attachmentID'];
@@ -135,6 +135,9 @@ if($searchWord !== '' && $searchWord !== '0'){
 	echo '<tbody>';	
 	$start = ($start)?$start:1;			
 	$i = ($eagleActivePage-1)*$rowsPerPage;
+	if(is_array($select)){
+
+	
 	foreach($select as $row){
 		$i = $i++;
 		$i++;
@@ -149,7 +152,7 @@ if($searchWord !== '' && $searchWord !== '0'){
 		echo '<td>'.$t->status($req_id).'</td>';
 		echo '<td><a class="eagle-load" href="'.return_url().'requisition/view-requisition/'.$req_id.'">View Details</a></td>';
 		echo '</tr>';
-		
+	}	
 		//////////////////////////////////REPORT STEP 2//////////////////////////////////	
 		 
 		
@@ -282,4 +285,4 @@ function links($f, $active, $numPerPage, $pages,$totalRecords, $color='blue', $a
 		});
 	});
 </script>
-<?php
+?>

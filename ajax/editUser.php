@@ -1,6 +1,7 @@
 <?php
 error_reporting(null);
-include(__DIR__ . "/../classes/init.inc");	
+// include(__DIR__ . "/../classes/init.inc");	
+include_once __DIR__ . "/classes/init.php";	
 $t = new BeforeAndAfter();
       $check_number = addslashes(ucwords(strtolower($_POST['check_number'])));  
       $surname = addslashes(ucwords(strtolower($_POST['surname'])));      

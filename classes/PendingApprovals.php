@@ -3,13 +3,14 @@ Class PendingApprovals extends BeforeAndAfter{
 	public $page = "PENDING APPROVALS";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public static function getLinks(){
 		$page = "PENDING APPROVALS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Pending Approvals", 
 				"link_address"=>"pending-approvals/requisitions",
@@ -25,14 +26,12 @@ Class PendingApprovals extends BeforeAndAfter{
 				"link_right"=>"V",
 			),
 		);
-		
-		return $links;
 	}
 	
 	
 	
 	public function requisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -141,9 +140,7 @@ Class PendingApprovals extends BeforeAndAfter{
 	public function isApproved($user_id, $req_id){
 		
 		$db = new db();
-		$num = 0;
-		
-		$select = $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 AND req_date_added > ".MONTHS_ACTIVE);				
+        $db->select("SELECT req_id FROM requisition WHERE req_added_by = $user_id AND req_status = 0 AND req_date_added > ".MONTHS_ACTIVE);				
 		return $db->num_rows();	
 	}
 
@@ -195,7 +192,7 @@ Class PendingApprovals extends BeforeAndAfter{
 
 		$sql = "SELECT * FROM requisition WHERE $leve AND req_id = '$req_id'";
 
-		$status = $u->select($sql);
+		$u->select($sql);
 		
 		if($u->num_rows()==1){
 			return true;
@@ -206,7 +203,7 @@ Class PendingApprovals extends BeforeAndAfter{
 
 	public function levels(){
 		$db = new Db();
-		$select = $db->select("SELECT app_id FROM approval_order WHERE app_role_id != '0'");
+		$db->select("SELECT app_id FROM approval_order WHERE app_role_id != '0'");
 		return $db->num_rows();		
 	}
 	
@@ -215,7 +212,7 @@ Class PendingApprovals extends BeforeAndAfter{
 
 		$t = $this->isDelegate($user_id, time());
 
-		if(count($t)){
+		if(count($t) > 0){
 			$user_id = $t['by'];
 			// echo '<pre>';
 			// print_r($t);

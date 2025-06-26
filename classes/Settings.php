@@ -3,7 +3,8 @@ class Settings extends BeforeAndAfter{
 	public $page = "SETTINGS";
 	public function getLinks(){
 		$page = "SETTINGS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Request Vehicle", 
 				"link_address"=>"settings/vehicle-and-fuel-settings",
@@ -12,8 +13,6 @@ class Settings extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function __construct(){
@@ -303,10 +302,11 @@ class Settings extends BeforeAndAfter{
 											$select = $db->select("SELECT branch_id, branch_name FROM branch ORDER BY branch_name ASC");
 											foreach($select[0] as $row){
 												extract($row);
-												if($branch_id == $user_branch_id)
-													echo '<option value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
-												else
-													echo '<option value="'.$branch_id.'">'.$branch_name.'</option>';
+												if ($branch_id == $user_branch_id) {
+                                                    echo '<option value="'.$branch_id.'" selected="selected">'.$branch_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$branch_id.'">'.$branch_name.'</option>';
+                                                }
 											}
 											?>
 										</select>
@@ -324,10 +324,11 @@ class Settings extends BeforeAndAfter{
 											$select = $db->select("SELECT dept_id, dept_name FROM department ORDER BY dept_name ASC");
 											foreach($select[0] as $row){
 												extract($row);
-												if($dept_id == $department_id)
-													echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($dept_id == $department_id) {
+                                                    echo '<option value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
 											}
 											?>
 										</select>
@@ -345,10 +346,11 @@ class Settings extends BeforeAndAfter{
 											$select = $db->select("SELECT section_id, section_name FROM section ORDER BY section_name ASC");
 											foreach($select[0] as $row){
 												extract($row);
-												if($section_id == $user_section_id)
-													echo '<option value="'.$section_id.'" selected="selected">'.$section_name.'</option>';
-												else
-													echo '<option value="'.$section_id.'">'.$section_name.'</option>';
+												if ($section_id == $user_section_id) {
+                                                    echo '<option value="'.$section_id.'" selected="selected">'.$section_name.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$section_id.'">'.$section_name.'</option>';
+                                                }
 											}
 											?>
 										</select>

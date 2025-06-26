@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";	
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 
@@ -115,6 +115,9 @@ $select = $db->select($sql);
 	echo '<tbody>';	
 	$start = ($start)?$start:1;			
 	$i = ($eagleActivePage-1)*$rowsPerPage;
+	if(is_array($select)){
+
+	
 	foreach($select as $row){
 		$i = $i++;
 		$i++;
@@ -129,7 +132,9 @@ $select = $db->select($sql);
 		$g = new Db();
 		$gg = $g->select($sql);
 		if ($g->num_rows()) {
+			if (is_array($gg) && isset($gg[0]) && is_array($gg[0])) {
             extract($gg[0]);
+			}
         }
 
 		echo '<tr>';
@@ -169,7 +174,7 @@ $select = $db->select($sql);
 		 
 		
 		/////////////////////////////////////////////////////////////////////////////
-		
+	}
 	}
 	echo '</tbody>';
 	

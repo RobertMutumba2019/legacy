@@ -6,17 +6,17 @@ Class Delegation extends BeforeAndAfter{
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-delegation"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-delegation") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-delegation"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-delegation") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 	
 	public function deleteDelegationAction(){
@@ -27,7 +27,8 @@ Class Delegation extends BeforeAndAfter{
 	
 	public function getLinks(){
 		$page = "DELEGATION";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Delegation", 
 				"link_address"=>"delegation/add-delegation",
@@ -50,8 +51,6 @@ Class Delegation extends BeforeAndAfter{
 			// 	"link_right"=>"V",
 			// )
 		);
-		
-		return $links;
 	}
 	
 	public function importItemsAction(){
@@ -103,11 +102,14 @@ Class Delegation extends BeforeAndAfter{
 			$sql = "SELECT del_start_date, del_end_date FROM delegation WHERE del_added_by = '$user_id' AND (del_start_date <= '$sd' AND del_end_date >= '$sd') OR (del_start_date <= '$ed' AND del_end_date >= '$ed')";
 			$select = $db->select($sql);
 			if($db->num_rows()){
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 				extract($select[0][0]);
+				}
 				$errors[] = "You already have an existing Delegation in the same period<b> (".FeedBack::date_s($del_start_date).'-'.FeedBack::date_s($del_end_date).")</b>";
 			}
 				
-			if(empty($errors)){
+			if($errors === []){
 				$db->insert("delegation",["del_date_added"=>time(),"del_to"=>$delegateTo,"del_start_date"=>$sd,"del_end_date"=>$ed,"del_reason"=>$reason,"del_added_by"=>user_id()]);
 				
 				if(empty($db->error())){
@@ -143,13 +145,17 @@ Class Delegation extends BeforeAndAfter{
 											$db=new Db();
 											$select=$db->select("SELECT * FROM sysuser WHERE user_id != '$uid'");
 											echo '<option value="">--- select ---</option>';
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach ($select[0] as $row) {
 												extract($row);
-												if($delegateTo == $user_id)
-													echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
-												else
-													echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+												if ($delegateTo == $user_id) {
+                                                    echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -195,7 +201,7 @@ Class Delegation extends BeforeAndAfter{
 	}
 	
 	public function AlldelegationAction(){
-	$access = new AccessRights();
+	new AccessRights();
 
 	$activeDelegate = $this->myDelegate(user_id(), time());
 	if(empty($activeDelegate)){
@@ -233,6 +239,8 @@ Class Delegation extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 				foreach($select[0] as $row){
 					extract($row);
 					echo '<tr>';
@@ -248,6 +256,7 @@ Class Delegation extends BeforeAndAfter{
 							echo $this->action('delete','delegation/delete-delegation/'.$del_id, 'Delete');
 					echo '</td>';
 
+				}
 				}
 				echo '</tbody>';
 				
@@ -273,8 +282,10 @@ Class Delegation extends BeforeAndAfter{
 		$id = portion(3);
 		$db = new Db();
 		$select = $db->select("SELECT * FROM delegation WHERE del_id ='$id'");
-		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 		extract($select[0][0]);
+		}
 			if(isset($_POST['submit'])){
 			$delegateTo = $_POST['delegateTo'];
 			$start_date = $_POST['start_date'];
@@ -311,11 +322,13 @@ Class Delegation extends BeforeAndAfter{
 			$sql = "SELECT del_start_date, del_end_date FROM delegation WHERE del_id != '$id' AND del_added_by = '$user_id' AND (del_start_date <= '$sd' AND del_end_date >= '$sd') OR (del_start_date <= '$ed' AND del_end_date >= '$ed')";
 			$select = $db->select($sql);
 			if($db->num_rows()){
-				extract($select[0][0]);
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
+				extract($select[0][0]);}
 				$errors[] = "You already have an existing Delegation in the same period<b> (".FeedBack::date_s($del_start_date).'-'.FeedBack::date_s($del_end_date).")</b>";
 			}
 				
-			if(empty($errors)){
+			if($errors === []){
 				$db->update("delegation",["del_date_added"=>$user,"del_to"=>$delegateTo,"del_start_date"=>$sd,"del_end_date"=>$ed,"del_reason"=>$reason,"del_added_by"=>$user],["del_id"=>$id]);
 				
 				if(empty($db->error())){
@@ -329,12 +342,15 @@ Class Delegation extends BeforeAndAfter{
 			}
 		}
 
-		if(empty($delegateTo))
-			$delegateTo = $del_to;
-		if(empty($start_date))
-			$start_date = date('Y-m-d', $del_start_date);
-		if(empty($end_date))
-			$end_date = date('Y-m-d', $del_end_date);
+		if (empty($delegateTo)) {
+            $delegateTo = $del_to;
+        }
+		if (empty($start_date)) {
+            $start_date = date('Y-m-d', $del_start_date);
+        }
+		if (empty($end_date)) {
+            $end_date = date('Y-m-d', $del_end_date);
+        }
 		
 		?>
 		<div class="col-md-10">
@@ -359,12 +375,16 @@ Class Delegation extends BeforeAndAfter{
 											$db=new Db();
 											$select=$db->select("SELECT * FROM sysuser WHERE user_id = '$uid'");
 											echo '<option value="">--- select ---</option>';
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach ($select[0] as $row) {
 												extract($row);
-												if($user_id == $delegateTo)
-												echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
-												else
-												echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+												if ($user_id == $delegateTo) {
+                                                    echo '<option selected value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                } else {
+                                                    echo '<option value="'.$user_id.'" >'.$user_surname.' '.$user_othername.'</option>';
+                                                }
+											}
 											}
 											?>
 										</select>
@@ -425,7 +445,7 @@ Class Delegation extends BeforeAndAfter{
 			if($this->isThere("section", ["section_name"=>$section])){
 				$errors[]="section($section) already exists";
 			}
-			if(empty($errors)){
+			if($errors === []){
 		
 				$x = $db->insert("section",["section_date_added"=>$time,"section_dept_id"=>$department_id, "section_name"=>$section,"section_added_by"=>$user, "section_status"=>1]);
 				echo $db->error();
@@ -466,12 +486,16 @@ Class Delegation extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_status = 1 ORDER BY dept_name ASC");
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
 											foreach($select[0] as $row){
 												extract($row);
-												if($dept_id == $department_id)
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
-												else
-													echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+												if ($dept_id == $department_id) {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'" selected="selected">'.$dept_name.'</option>';
+                                                } else {
+                                                    echo '<option data-subtext="'.$dept_name.'" value="'.$dept_id.'">'.$dept_name.'</option>';
+                                                }
+											}
 											}
 											?>
 										</select>

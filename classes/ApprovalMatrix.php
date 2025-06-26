@@ -6,17 +6,17 @@ Class ApprovalMatrix extends BeforeAndAfter{
 	public function __construct(){
 		$access = new AccessRights();
 		
-		if(portion(2) == "all-delegation"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'V')){
+		if (portion(2) == "all-delegation") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'V')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}else if(portion(2)=="add-delegation"){
-			if(!$access->sectionAccess(user_id(), $this->page, 'A')){
+        } elseif (portion(2)=="add-delegation") {
+            if(!$access->sectionAccess(user_id(), $this->page, 'A')){
 				echo '<H1><center style="color:red;">YOU DONT HAVE ACCESS TO THIS PAGE</center></H1>';
 				FeedBack::refresh(1, return_url()."dashboard/index");
 			}
-		}
+        }
 	}
 	
 	public function id($id){
@@ -26,7 +26,8 @@ Class ApprovalMatrix extends BeforeAndAfter{
 	
 	public static function getLinks(){
 		$page = "APPROVAL MATRIX";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Approval Matrix", 
 				"link_address"=>"approvalMatrix/add-approval-Matrix",
@@ -49,8 +50,6 @@ Class ApprovalMatrix extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	public function deleteApprovalMatrixAction(){
 		$id = portion(3);
@@ -75,15 +74,15 @@ Class ApprovalMatrix extends BeforeAndAfter{
 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
-						if(empty($col_2)){
+						if($col_2 === '' || $col_2 === '0'){
 							$errors[] = "Cell <b>B".$count."</b> should not be empty";
 						}
 
@@ -98,7 +97,7 @@ Class ApprovalMatrix extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -164,7 +163,7 @@ Class ApprovalMatrix extends BeforeAndAfter{
 				$errors[]="Code($code)already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->insert("approval_matrix",["ap_date_added"=>time(),"ap_code"=>$code,"ap_unit_code"=>$unit_name,"ap_added_by"=>user_id()]);
 				
 				if(empty($db->error())){
@@ -220,7 +219,7 @@ Class ApprovalMatrix extends BeforeAndAfter{
 	}
 	
 	public function AllApprovalMatrixAction(){
-	$access = new AccessRights();
+	new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -245,6 +244,9 @@ Class ApprovalMatrix extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -258,7 +260,8 @@ Class ApprovalMatrix extends BeforeAndAfter{
 							echo '<a class="eagle-load btn btn-success btn-xs" href="'.return_url().'approvalMatrix/edit-approval-matrix/'.$ap_id.'">Edit</a>'."  ";
 							echo '<a class="btn btn-xs btn-danger" href="'.return_url().'approvalMatrix/delete-approval-matrix/'.$ap_id.'">Delete</a>';
 					echo '</td>';
-
+                
+				}
 				}
 				echo '</tbody>';
 				
@@ -303,8 +306,9 @@ Class ApprovalMatrix extends BeforeAndAfter{
 		$id = $this->id;
 		$db = new Db();
 		$select = $db->select("SELECT * FROM approval_matrix WHERE ap_id ='$id'");
-		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+		}
 			if(isset($_POST['submit'])){
 			$code = $_POST['code'];
 			$unit_name = $_POST['unit_name'];
@@ -326,7 +330,7 @@ Class ApprovalMatrix extends BeforeAndAfter{
 			// 	$errors[]="department($department) already exists";
 			// }
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db->update("approval_matrix",["ap_date_added"=>time(),"ap_code"=>$code,"ap_unit_code"=>$unit_name,"ap_added_by"=>user_id()],["ap_id"=>$id]);
 				
 				if(empty($db->error())){

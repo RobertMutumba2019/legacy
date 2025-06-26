@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 
@@ -41,6 +41,9 @@ if(!$db->num_rows()){
 	echo 'There are no attachments';
 }else{
 	echo '<ol class="attachment-list">';
+	if(is_array($select)){
+
+	
 	foreach($select as $row){
 		extract($row);
 		echo '<li>';
@@ -49,6 +52,7 @@ if(!$db->num_rows()){
 		echo '<a href="'.$at_path.'" target="_blank">'.$at_name.'</a>';
 		
 		echo '</li>';
+	}
 	}
 	echo '</ol>';
 }

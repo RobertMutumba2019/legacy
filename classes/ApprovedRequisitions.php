@@ -3,13 +3,14 @@ Class ApprovedRequisitions extends BeforeAndAfter{
 	public $page = "APPROVED REQUISITIONS";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public static function getLinks(){
 		$page = "APPROVED REQUISITIONS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"New Requisition", 
 				"link_address"=>"requisition/approved-requisitions",
@@ -25,12 +26,10 @@ Class ApprovedRequisitions extends BeforeAndAfter{
 				"link_right"=>"V",
 			),
 		);
-		
-		return $links;
 	}
 	
 	public function requisitionsAction(){
-		$access = new AccessRights();
+		new AccessRights();
 	?>
 		<div class="col-md-12">
 			<?php 
@@ -180,7 +179,7 @@ Class ApprovedRequisitions extends BeforeAndAfter{
 			
 		
 		//$select = $db->select($sql);
-		if(count($select)){
+		if(count($select) > 0){
 		$no = 1;
 		echo '<table border="1" id="table">';
 		echo '<tr>';

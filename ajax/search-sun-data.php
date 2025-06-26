@@ -1,7 +1,7 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";
 
-include __DIR__ . "/../classes/DbSunServer.php";
+include_once __DIR__ . "/classes/DbSunServer.php";
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 
@@ -24,6 +24,9 @@ echo '<div class="col-md-12">';
 echo '<h3>Search & Select Item Code or Name</h3>';
 echo '<select id="itemSelected" style="width:100%;" class=" select4" name="">';
 echo '<option value="">--Select--</option>';
+if(is_array($sun_select)){
+
+
 foreach($sun_select as $row){
 	extract($row);
 	if($db_description == $value){
@@ -31,6 +34,7 @@ foreach($sun_select as $row){
 	}else{
 		echo '<option value="'.$db_item_code.'" name="">'.$db_item_code." - ".ucwords(strtolower($db_description)).'</option>';
 	}
+}
 }
 echo '</select>';
 echo '</div>';

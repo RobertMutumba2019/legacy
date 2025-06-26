@@ -1,16 +1,19 @@
 <?php
 
+include_once __DIR__ . "/Exporter.inc";
+
 Class Reports extends BeforeAndAfter{
 	public $page = "REPORTS";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public function getLinks(){
 		$page = "REPORTS";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Serial Number Finder", 
 				"link_address"=>"reports/serial-number-finder",
@@ -33,20 +36,18 @@ Class Reports extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 
 	public function typeFinder($id, $search){
-		if($id == "c"){
-			return "LIKE '%$search%'";
-		}else if($id == "e"){
-			return "LIKE '%$search'";
-		}else if($id == "s"){
-			return "LIKE '$search%'";
-		}else if($id == "p"){
-			return "LIKE '$search'";
-		}else{
+		if ($id == "c") {
+            return "LIKE '%$search%'";
+        } elseif ($id == "e") {
+            return "LIKE '%$search'";
+        } elseif ($id == "s") {
+            return "LIKE '$search%'";
+        } elseif ($id == "p") {
+            return "LIKE '$search'";
+        } else{
 			return $id." '$search'";
 		}
 	}
@@ -156,7 +157,7 @@ Class Reports extends BeforeAndAfter{
 			
 			$results = array();
 
-			if(empty($errors)){	
+			if($errors === []){	
 				$toSearch = $this->typeFinder($type, $serial_number);
 				$total = array();
 				foreach($tables as $key=>$values){				
@@ -173,6 +174,10 @@ Class Reports extends BeforeAndAfter{
 					
 					if($db->num_rows()){
 						$total[$key] = $db->num_rows();
+
+						if(is_array($select)){
+
+						
 						foreach($select as $sel){
 							extract($sel);
 							$results[] = array(
@@ -183,6 +188,7 @@ Class Reports extends BeforeAndAfter{
 								'link'=>$link
 							);
 							
+						}
 						}
 					}
 				}
@@ -435,7 +441,7 @@ Class Reports extends BeforeAndAfter{
 			
 			$results = array();
 
-			if(empty($errors)){	
+			if($errors === []){	
 				$toSearch = $this->typeFinder($type, $serial_number);
 				$total = array();
 				foreach($tables as $key=>$values){				
@@ -452,6 +458,10 @@ Class Reports extends BeforeAndAfter{
 					
 					if($db->num_rows()){
 						$total[$key] = $db->num_rows();
+
+						if(is_array($select)){
+
+						
 						foreach($select as $sel){
 							extract($sel);
 							$results[] = array(
@@ -461,7 +471,7 @@ Class Reports extends BeforeAndAfter{
 								'added_by'=>$added_by2, 
 								'link'=>$link
 							);
-							
+						}	
 						}
 					}
 				}
@@ -1969,15 +1979,17 @@ Class Reports extends BeforeAndAfter{
 			$checks = $_POST['check'];
 
 			$cols_to_use = array();
+            $counter = count($ches);
 
-			for($m=0; $m <count($ches); $m++){
+			for($m=0; $m <$counter; $m++){
 				if(in_array($ches[$m], $checks)){
 					$cols_to_use[] = $ches[$m];
 				}
 			}
 
 			$newChecks = array();
-			for($t=0; $t<count($ches); $t++){
+            $counter = count($ches);
+			for($t=0; $t<$counter; $t++){
 				if(in_array($ches[$t], $checks)){
 					$newChecks[] = $chs[$t];
 				}
@@ -1990,55 +2002,45 @@ Class Reports extends BeforeAndAfter{
 			$cits = $_POST['cit'];
 
 			$where = array();
-			for($m=0; $m <count($cits); $m++){				
-				if($cits[$m] !== ""){ 
-					if($cits[$m] > $bets[$m] && $bets[$m] != ""){
+            $counter = count($cits);
+			for($m=0; $m <$counter; $m++){				
+				if ($cits[$m] !== "") {
+                    if($cits[$m] > $bets[$m] && $bets[$m] != ""){
 						$error[] = $ches[$m]." first value should be lessthan than the second value.";
 					}
-					if($syms[$m]=="between"){
-						if($bets[$m] == ""){
+                    if ($syms[$m]=="between") {
+                        if($bets[$m] == ""){
 							$error[] = $ches[$m]." is missing a second value for between";
 						}
-						if($dat_typs[$m]=="date"){
+                        if($dat_typs[$m]=="date"){
 							$where[] = $cols[$m].' BETWEEN '.strtotime($cits[$m]).' AND '.strtotime($bets[$m]).'';
 						}else{
 							$where[] = $cols[$m].' BETWEEN '.$cits[$m].' AND '.$bets[$m].'';
 						}
-					}else if($dat_typs[$m]=="date"){
-						$where[] = $cols[$m].' '.$this->typeFinder($syms[$m], strtotime($cits[$m]));
-					}else{
+                    } elseif ($dat_typs[$m]=="date") {
+                        $where[] = $cols[$m].' '.$this->typeFinder($syms[$m], strtotime($cits[$m]));
+                    } else{
 						$where[] = $cols[$m].' '.$this->typeFinder($syms[$m], $cits[$m]);
 					}
-				}else if($cits[$m] == "" && $bets[$m] != ""){
-					$error[] = $ches[$m]." is missing a second value for between";
-				}
+                } elseif ($cits[$m] == "" && $bets[$m] != "") {
+                    $error[] = $ches[$m]." is missing a second value for between";
+                }
 			}
 
-			if(!empty($where)){
-				$where = ' WHERE '.implode(' AND ', $where);
-			}else{
-				$where = "";
-			}			
+			$where = $where === [] ? "" : ' WHERE '.implode(' AND ', $where);			
 
 			$orders = $_POST['order'];
 
 			$all_orders = array();
-			for($i=0; $i<count($cols); $i++){
+            $counter = count($cols);
+			for($i=0; $i<$counter; $i++){
 				if(!empty($orders[$i])){
 					$all_orders[] = $cols[$i].' '.$orders[$i];
 				}
 			}
 
-			if(!empty($all_orders)){
-				$all_orders = " ORDER BY ".implode(' , ', $all_orders);
-			}else{
-				$all_orders = "";
-			}
-			if(!empty($to_return)){
-				$top = " TOP $to_return ";
-			}else{
-				$top = "";
-			}
+			$all_orders = $all_orders === [] ? "" : " ORDER BY ".implode(' , ', $all_orders);
+			$top = empty($to_return) ? "" : " TOP $to_return ";
 			//echo '<br/>';
 			$query = "SELECT $top $all_checks FROM $tab $where $all_orders";
 
@@ -2046,7 +2048,7 @@ Class Reports extends BeforeAndAfter{
 
 			//echo '>>>> '.$db->num_rows().' <<<< ';
 
-			if(!empty($error)){
+			if($error !== []){
 				Feedback::errors($error);
 			}
 			
@@ -2109,7 +2111,7 @@ Class Reports extends BeforeAndAfter{
 			//echo '<div>';
 
 			if(is_array($values)){
-				if($key == "columns"){
+				if($key === "columns"){
 					$number_of_columns = count($values);
 
 					
@@ -2135,28 +2137,26 @@ Class Reports extends BeforeAndAfter{
 						$method_caller = $va['method_caller'];
 						$total = $va['total'];
 
-						if(!empty($method_caller) || !empty($total) || !empty($match_to)){
+						if($method_caller !== '' && $method_caller !== '0' && ($method_caller !== '' && $method_caller !== '0') && $method_caller !== [] && $method_caller !== [] || $total !== '' && $total !== '0' && ($total !== '' && $total !== '0') && $total !== [] && $total !== [] || $match_to !== '' && $match_to !== '0' && ($match_to !== '' && $match_to !== '0') && $match_to !== [] && $match_to !== []){
 							
 							$gS[$c-2] .= '<input type="hidden" value="'.$val.'" name="che[]"/>';
 							$gS[$c-2] .='<input type="hidden" value="'.$va["db_col"].'" name="ch[]"/>';
 
 							//if(!empty($match_to) ){
 							//if(0 ){
-							if(1){
+							if(1 !== 0){
 								$gS[$c-2] .= '<div style="width:100%; text-align:center;"><input style="margin:auto;" type="checkbox" value="'.$val.'" name="check[]" ';
-								if(isset($_POST['generate_report'])){
-									if(in_array($val, $checks)){
+								if (isset($_POST['generate_report'])) {
+                                    if(in_array($val, $checks)){
 									 	$gS[$c-2] .= ' checked="checked" ';
 									}else{
 										$gS[$c-2] .=  '';
 									}
-								}else{
-									if($default){
-									 	$gS[$c-2] .=  ' checked="checked" ';
-									}else{
+                                } elseif ($default) {
+                                    $gS[$c-2] .=  ' checked="checked" ';
+                                } else{
 										$gS[$c-2] .=  '';
 									}
-								}
 								$gS[$c-2] .=  ' id="md_checkbox_'.$c.'" class="filled-in chk-col-red" />';
 		                       $gS[$c-2] .=  '<label for="md_checkbox_'.$c.'"></label></div>';
 		                    	
@@ -2185,19 +2185,17 @@ Class Reports extends BeforeAndAfter{
 							$gS[$c-2] .= '<input type="hidden" value="'.$va["db_col"].'" name="ch[]"/>';
 
 							$gS[$c-2] .= '<div style="width:100%; text-align:center;"><input style="margin:auto;" type="checkbox" value="'.$val.'" name="check[]" ';
-							if(isset($_POST['generate_report'])){
-								if(in_array($val, $checks)){
+							if (isset($_POST['generate_report'])) {
+                                if(in_array($val, $checks)){
 								 	$gS[$c-2] .= ' checked="checked" ';
 								}else{
 									$gS[$c-2] .= '';
 								}
-							}else{
-								if($default){
-								 	$gS[$c-2] .= ' checked="checked" ';
-								}else{
+                            } elseif ($default) {
+                                $gS[$c-2] .= ' checked="checked" ';
+                            } else{
 									$gS[$c-2] .= '';
 								}
-							}
 							$gS[$c-2] .= ' id="md_checkbox_'.$c.'" class="filled-in chk-col-red" />';
 	                        $gS[$c-2] .= '<label for="md_checkbox_'.$c.'"></label></div>';
 	                        
@@ -2222,10 +2220,11 @@ Class Reports extends BeforeAndAfter{
 								$gW[$c-2] .= '<select id="select'.($c-2).'" onchange="return isBetween('.($c-2).');" class="form-control" name="sym[]" style="width: 130px">';
 								
 								foreach($symbols[$data_type] as $k => $kk){
-									if($syms[$c-2] == $kk)
-										$gW[$c-2] .= '<option selected="selected" value="'.$kk.'">'.$k.'</option>';
-									else
-										$gW[$c-2] .= '<option value="'.$kk.'">'.$k.'</option>';
+									if ($syms[$c-2] == $kk) {
+                                        $gW[$c-2] .= '<option selected="selected" value="'.$kk.'">'.$k.'</option>';
+                                    } else {
+                                        $gW[$c-2] .= '<option value="'.$kk.'">'.$k.'</option>';
+                                    }
 								}								
 								
 								$gW[$c-2] .= '</select>';
@@ -2282,8 +2281,10 @@ Class Reports extends BeforeAndAfter{
 		echo '<table border="1" style="" id="ac1" >';
 			echo '';
 		foreach($fields as $field => $field_value){
-			if($field_value != 'And'){
-				if($field_value == "Between") $field_value = "And";
+			if($field_value !== 'And'){
+				if ($field_value === "Between") {
+                    $field_value = "And";
+                }
 				echo '<tr style="height: 24px;"><td>&nbsp;'.$field_value.'&nbsp;</td></tr>';
 			}
 		}
@@ -2306,9 +2307,11 @@ Class Reports extends BeforeAndAfter{
 		echo '</td></tr>';
 		
 		foreach($fields as $field => $field_value){
-			if($field_value != 'And'){
+			if($field_value !== 'And'){
 				echo '<tr>';
-				if($field_value == "Between") $field_value = "And";
+				if ($field_value === "Between") {
+                    $field_value = "And";
+                }
 				echo '<td>&nbsp;'.$field_value.'&nbsp;</td>';
 				echo '<td style="max-height:24px;">'.implode('</td><td>', $$field).'</td>';
 				echo '</tr>';
@@ -2372,10 +2375,6 @@ Class Reports extends BeforeAndAfter{
 			echo '<div class="clearfix"></div>';
 		}
 
-		if(isset($_POST['generate_report'])){
-			
-		}
-
 		echo '</form>';
 		//echo '</div>';
 		if(isset($_POST['generate_report'])){
@@ -2385,11 +2384,12 @@ Class Reports extends BeforeAndAfter{
 
 			//echo count($cols_to_use);
 			$re = array();
-			for($j=0; $j<count($select[0]); $j++){
+            $counter = count($select[0]);
+			for($j=0; $j<$counter; $j++){
 				
 				for($i=0; $i<count($cols_to_use); $i++){
 					//echo '<b>To:'.$cols_to_use[$i].'</b><br/>';				
-					foreach($requiredReports[$table] as $a => $b){
+					foreach($requiredReports[$table] as $b){
 
 						if(is_array($b)){
 							$col = $b[$cols_to_use[$i]]['db_col'];							
@@ -2402,39 +2402,35 @@ Class Reports extends BeforeAndAfter{
 							$col_value = ($select[0][$j][$col]);
 
 							//------------------- METHOD CALLER -----------------
-							if(!empty($method_caller)){
-
-								$class_name = $method_caller[0];
-								$method_name = $method_caller[1];
-								if(class_exists($class_name)){									
+							if ($method_caller !== '' && $method_caller !== '0' && ($method_caller !== '' && $method_caller !== '0') && $method_caller !== [] && $method_caller !== []) {
+                                $class_name = $method_caller[0];
+                                $method_name = $method_caller[1];
+                                if(class_exists($class_name)){									
 									$class = new $class_name;									
-									if(is_callable([$class, $method_name])){
-										$col_value = $class->$method_name($col_value);	
-									}else{
-										$col_value = '-2';
-									}									
+									$col_value = is_callable([$class, $method_name]) ? $class->$method_name($col_value) : '-2';									
 								}else{
 									$col_value = '-1';
 								}
-							}else if(!empty($sum)){	//------------ SUM -----------	 			
-								$col_value = $this->total($sum[0], $sum[1], $col_value);
-							}else if(!empty($match_to)){	//------------ MATCH TO -----------	 			
-								$col_value = $this->rgf($match_to[0], $col_value, $match_to[1], $match_to[2]);
-							}else{
-								$col_value = $col_value;
-							}
+                            } elseif ($sum !== '' && $sum !== '0' && ($sum !== '' && $sum !== '0') && $sum !== [] && $sum !== []) {
+                                //------------ SUM -----------	 			
+                                $col_value = $this->total($sum[0], $sum[1], $col_value);
+                            } elseif ($match_to !== '' && $match_to !== '0' && ($match_to !== '' && $match_to !== '0') && $match_to !== [] && $match_to !== []) {
+                                //------------ MATCH TO -----------	 			
+                                $col_value = $this->rgf($match_to[0], $col_value, $match_to[1], $match_to[2]);
+                            } else {
+                            }
 
-							if($data_type == "number"){
-								$re[$j][$i] =  '<div style="text-align:right;width:100%;"> '.number_format($col_value).'</div>';
-							}else if($data_type == "float"){
-								$re[$j][$i] =  '<div style="text-align:right;width:100%;"> '.number_format($col_value, 2).'</div>';
-							}else if($data_type == "text"){
-								$re[$j][$i] = $col_value;
-							}else if($data_type == "date"){
-								$re[$j][$i] = Feedback::date_fm($col_value);
-							}else if($data_type == "float"){
-								$re[$j][$i] =  number_format($col_value,2);
-							}else{
+							if ($data_type == "number") {
+                                $re[$j][$i] =  '<div style="text-align:right;width:100%;"> '.number_format($col_value).'</div>';
+                            } elseif ($data_type == "float") {
+                                $re[$j][$i] =  '<div style="text-align:right;width:100%;"> '.number_format($col_value, 2).'</div>';
+                            } elseif ($data_type == "text") {
+                                $re[$j][$i] = $col_value;
+                            } elseif ($data_type == "date") {
+                                $re[$j][$i] = Feedback::date_fm($col_value);
+                            } elseif ($data_type == "float") {
+                                $re[$j][$i] =  number_format($col_value,2);
+                            } else{
 								$re[$j][$i] = $col_value;
 							}
 
@@ -2445,7 +2441,7 @@ Class Reports extends BeforeAndAfter{
 			}
 
 
-			foreach($re as $x => $r){
+			foreach($re as $r){
 				
 				$db_values[] = $r;
 			}
@@ -2480,9 +2476,6 @@ Class Reports extends BeforeAndAfter{
 		$db = new Db();
 
 		echo 'Date:' .Feedback::date_fm(1573453772);
-
-
-		$reg = array();
 		$sql = "SELECT distinct tvr_id, tvr_driver_id,tvr_vehicle_id, tvr_tfa_number, tvr_no FROM territory_vehicle_return WHERE tvr_app1 = 0 AND tvr_app2 = 0";
 		//$sql = "SELECT * FROM territory_vehicle_request ORDER BY tvri_number ASC ";
 
@@ -2494,6 +2487,10 @@ Class Reports extends BeforeAndAfter{
 		$req = array();
 		$req1 = array();
 		$no = 1;
+
+		if(is_array($select)){
+
+		
 		foreach($select as $row){
 			extract($row);
 
@@ -2522,7 +2519,9 @@ Class Reports extends BeforeAndAfter{
 				$db1 = new Db();
 				$sql = "SELECT * FROM comment WHERE comment_type = 'RETURN TERRITORY' AND comment_part_id = '$tvr_id' AND comment_from = '$tvri_added_by' ";
 				$sel = $db1->select($sql);
+				if (is_array($sel) && isset($sel[0]) && is_array($sel[0])) {
 				extract($sel[0][0]);
+				}
 
 				echo '<td>'.Feedback::date_fm($comment_date).'</td>';
 				//echo '<td>'.($sql).'</td>';
@@ -2531,6 +2530,7 @@ Class Reports extends BeforeAndAfter{
 				echo '</tr>';
 			}
 		}
+	}
 
 		echo '</table>';
 

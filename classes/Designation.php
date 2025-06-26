@@ -1,15 +1,18 @@
 <?php
+
+include_once __DIR__ . "/Exporter.inc";
 Class Designation extends BeforeAndAfter{
 	public $page = "DESIGNATION";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public static function getLinks(){
 		$page = "DESIGNATION";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add Designation", 
 				"link_address"=>"designation/add-designation",
@@ -32,8 +35,6 @@ Class Designation extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function deleteDesignationAction(){
@@ -58,12 +59,12 @@ Class Designation extends BeforeAndAfter{
 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
 
@@ -78,7 +79,7 @@ Class Designation extends BeforeAndAfter{
 				}
 				fclose($file);
 				$count = 0;
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -139,7 +140,7 @@ Class Designation extends BeforeAndAfter{
 				$errors[]="designation($designation) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$x = $db->insert("designation",["designation_date_added"=>$time, "designation_name"=>"$designation","designation_added_by"=>$user]);
 							
 				$db = new Db();
@@ -189,7 +190,10 @@ Class Designation extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from designation WHERE designation_id='$id'");
-		extract($select[0][0]);
+		
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+											
+		extract($select[0][0]);}
 		if(isset($_POST['submit'])){
 		
 			$designation = $_POST['designation'];
@@ -205,7 +209,7 @@ Class Designation extends BeforeAndAfter{
 				$errors[]="designation($designation) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db = new Db();
 
 				$uid = $this->rgf("user_role", $designation_name , "ur_name", "ur_id");
@@ -291,6 +295,10 @@ Class Designation extends BeforeAndAfter{
 				//////////////////////////////////////////////////////////////
 				$i=1;
 				echo '<tbody>';
+
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -301,10 +309,12 @@ Class Designation extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','designation/edit-designation/'.$designation_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page, 'D'))
-							echo $this->action('delete','designation/delete-designation/'.$designation_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','designation/edit-designation/'.$designation_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page, 'D')) {
+                            echo $this->action('delete','designation/delete-designation/'.$designation_id, 'Delete');
+                        }
 						echo '</td>';
 					}
 					echo '</tr>';
@@ -319,7 +329,7 @@ Class Designation extends BeforeAndAfter{
 					); 
 					
 					/////////////////////////////////////////////////////////////////////////////
-					
+				}	
 				}
 				echo '</tbody>';
 				

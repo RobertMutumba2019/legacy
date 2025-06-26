@@ -4,7 +4,8 @@ Class AccessRights extends BeforeAndAfter{
 	public $id = 0;
 	public static function getLinks(){
 		$page = "USER ROLES AND PRIVILEGES";
-		$links = array(			
+		
+		return array(			
 			array(
 				"link_name"=>"User Rights & Privileges", 
 				"link_address"=>"access-rights/all-user-rights-and-privileges",
@@ -13,8 +14,6 @@ Class AccessRights extends BeforeAndAfter{
 				"link_right"=>"A",
 			)
 		);
-		
-		return $links;
 	}
 
 
@@ -59,8 +58,8 @@ Class AccessRights extends BeforeAndAfter{
 	
 	public function check($page, $privilege){
 		
-		$page =str_replace(' ', '_', strtolower($this->pages[$i]));		
-		$val = "SELECT $privilege FROM access_rights WHERE page = '$page';";
+		str_replace(' ', '_',
+		 strtolower($this->pages[$i])); //undefined variable $i by Mutumba
 	}
 	
 	public function getUserRights($user_role){
@@ -70,9 +69,14 @@ Class AccessRights extends BeforeAndAfter{
 		$select = $db->select($sql);
 		
 		if($db->num_rows()){
+			if(is_array($select)){
+
+			
 			foreach($select as $row){
 				extract($row);
 				$users[] = $user_surname.' '.$user_othername;
+
+			}
 			}
 		}
 		return $users;
@@ -109,7 +113,9 @@ Class AccessRights extends BeforeAndAfter{
 		
 		$sql = "SELECT ur_id, ur_name, ur_added_by, ur_date_added FROM user_role WHERE ur_id = '$id'";
 		$select = $db->select($sql);
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		return $select[0];
+		}
 	}
 	
 	public function addUserRoleAndPrivilegesAction(){
@@ -148,9 +154,11 @@ Class AccessRights extends BeforeAndAfter{
 				
 				echo $db->error();
 				
-				$role_id = $db->last_id();//get role id after inserting
+				$role_id = $db->last_id();
+                //get role id after inserting
+                $counter = count($pages);//get role id after inserting
 				
-				for($i=0; $i<count($pages); $i++){
+				for($i=0; $i<$counter; $i++){
 					
 					$page_name = $pages[$i];
 					$re = array();
@@ -215,7 +223,8 @@ Class AccessRights extends BeforeAndAfter{
 									echo '</tr>';
 									$q=1;
 									sort($x->pages);
-									for($i=0; $i<count($x->pages); $i++){
+                                    $counter = count($x->pages);
+									for($i=0; $i<$counter; $i++){
 										echo '<tr>';
 										echo '<td>'.($i+1).'</td>';
 										echo '<td>'.$x->pages[$i].'</td>';
@@ -266,7 +275,8 @@ Class AccessRights extends BeforeAndAfter{
 		echo "<b>Total User Roles: ".count($this->roles);
 		echo '</b><br/>';
 		$all = array();
-		for($j=0; $j<count($this->roles); $j++){
+        $counter = count($this->roles);
+		for($j=0; $j<$counter; $j++){
 			$all[] = '<a  href="#'.ucwords($this->roles[$j]['ur_name']).'"> '.ucwords($this->roles[$j]['ur_name']).'</a>';
 		}
 		echo '<ol><li>'.implode(' </li><li> ', $all).'</li></ol>';
@@ -274,12 +284,14 @@ Class AccessRights extends BeforeAndAfter{
 		echo '<b><h4>Roles And Privileges</h4></b>';
 		echo '<style type="text/css">.divPart .divSection{padding:50px !important;}.divPart .divSection+div{border-top:1px solid black;}.divPart .divSection:first-child{border-top:1px solid black;}.divPart .divSection:last-child{border-bottom:1px solid black;}</style>';
 		echo '<div class="divPart">';
-		for($j=0; $j<count($this->roles); $j++){
+        $counter = count($this->roles);
+		for($j=0; $j<$counter; $j++){
 			echo '<div  id="'.ucwords($this->roles[$j]['ur_name']).'"></div>';
-			if($j%2==1)
-				echo '<div class="divSection" style="background-color: white;padding:10px;">';
-			else
-				echo '<div class="divSection" style="background-color: #fff1f1;padding:10px;">';
+			if ($j%2==1) {
+                echo '<div class="divSection" style="background-color: white;padding:10px;">';
+            } else {
+                echo '<div class="divSection" style="background-color: #fff1f1;padding:10px;">';
+            }
 			$user_id = $this->roles[$j]['ur_id'];
 			
 			//SELECT ar_id, ar_role_id, ar_page, ar_a, ar_v, ar_e, ar_d, ar_p, ar_i, ar_x FROM access_rights WHERE 1
@@ -287,7 +299,10 @@ Class AccessRights extends BeforeAndAfter{
 			$sql = "SELECT * FROM access_rights WHERE ar_role_id = '$user_id'";
 			$rows = $db->select($sql);
 			
-			echo $db->error();			
+			echo $db->error();	
+			if(is_array($rows)){
+
+				
 			foreach($rows as $row){
 				extract($row);
 				//echo '<pre>'; print_r($row); echo '</pre>';
@@ -298,14 +313,14 @@ Class AccessRights extends BeforeAndAfter{
 					//echo str_replace(' ', '_', strtolower($ar_page))."ar_".strtolower($key).$j.' ';
 					${str_replace(' ', '_', strtolower($ar_page))."ar_".strtolower($key).$j} = ${"ar_".strtolower($key)};
 				}
-				//$a++;
+			}	//$a++;
 				//echo '<br/>';
 			}
 			$rt = $this->roles[$j]['ur_id'];
 			$rtv = $this->getUserRights($rt);
 			echo '<div  id="'.ucwords($this->roles[$j]['ur_name']).'"></div>';
 			echo '<table style="font-size:14px; font-family:arial;">';
-			echo '<tr><td><br/><a href="'.return_url()."access-rights/edit-user-role-and-privileges/".$this->roles[$j]['ur_id'].'" title="Edit User Roles & Right"> <b>'.((int)$j+1).'.&nbsp;  '.ucwords(($this->roles[$j]['ur_name'])).'</b></a> &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; <a  href="#top">Back to Top</a><br/>Total Users:'.count($this->getUserRights($this->roles[$j]['ur_id'])).'<br/>'.implode(",", $rtv).' </td></tr>';
+			echo '<tr><td><br/><a href="'.return_url()."access-rights/edit-user-role-and-privileges/".$this->roles[$j]['ur_id'].'" title="Edit User Roles & Right"> <b>'.($j+1).'.&nbsp;  '.ucwords(($this->roles[$j]['ur_name'])).'</b></a> &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; <a  href="#top">Back to Top</a><br/>Total Users:'.count($this->getUserRights($this->roles[$j]['ur_id'])).'<br/>'.implode(",", $rtv).' </td></tr>';
 			echo '<tr valign="top">';
 			echo '<td>';
 			echo '<style type="text/css">.tx th, .tx td{padding:0; margin: 0;}</style>';
@@ -335,7 +350,7 @@ Class AccessRights extends BeforeAndAfter{
 					}
 				}
 
-				if($show){
+				if($show !== 0){
 					echo '<tr>';
 					echo '<td>'.($i+1).'</td>';
 					echo '<td>'.$this->pages[$i].'</td>';
@@ -443,6 +458,9 @@ Class AccessRights extends BeforeAndAfter{
 			$rows = $db->select($sql);
 			//print_r($rows);
 			$a = $j = 0;
+			if(is_array($rows)){
+
+			
 			foreach($rows as $row){
 				extract($row);
 				//echo '<pre>'.print_r($row).'</pre>';
@@ -457,7 +475,7 @@ Class AccessRights extends BeforeAndAfter{
 				$a++;
 				//echo '<br/>';
 			}
-			
+		    }
 			if(isset($_POST['submit'])){
 				
 				$role_name = $_POST['role_name'];
@@ -466,8 +484,9 @@ Class AccessRights extends BeforeAndAfter{
 				$user_id = user_id();
 				
 				$x = $db->update("user_role", ["ur_name"=>$role_name], ['ur_id'=>$id]);
+                $counter = count($pages);
 															
-				for($i=0; $i<count($pages); $i++){
+				for($i=0; $i<$counter; $i++){
 					
 					$page_name = $pages[$i];
 					$received = array();
@@ -572,7 +591,8 @@ Class AccessRights extends BeforeAndAfter{
 									$ar = $t = "";
 									sort($this->pages);
 									$q=1;
-									for($i=0; $i<count($this->pages); $i++){
+                                    $counter = count($this->pages);
+									for($i=0; $i<$counter; $i++){
 										echo '<tr>';
 										echo '<td>'.($i+1).'</td>';
 										echo '<td>'.$this->pages[$i].'</td>';
@@ -676,7 +696,9 @@ Class AccessRights extends BeforeAndAfter{
 			
 			$sql = "SELECT user_role FROM sysuser WHERE user_id = '$user_id'";
 			$select = $db->select($sql);
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 			extract($select[0]);
+			}
 			
 			$sql = "SELECT $right FROM access_rights WHERE ar_page = '$page' AND ar_role_id = '$user_role'";
 			extract(@$db->select($sql)[0]);
@@ -688,6 +710,7 @@ Class AccessRights extends BeforeAndAfter{
 				//echo 'ACCESS';
 			}
 		}
+        return null;
 				
 	}
 		
@@ -702,15 +725,20 @@ Class AccessRights extends BeforeAndAfter{
 			
 			$sql = "SELECT user_role FROM sysuser WHERE user_id = '$user_id'";
 			$select = $db->select($sql);
-			if($db->num_rows())
-				extract(@$select[0]);
+			if ($db->num_rows()) {
+				if (is_array($select) && isset($select[0]) && is_array($select[0])) {
+                extract(@$select[0]);
+				}
+            }
 			//print_r($select);
 			
 			$sql = "SELECT $right FROM access_rights WHERE ar_page = '$page' AND ar_role_id = '$user_role'";
 			$db2 = new Db();
 			$sel = $db2->select($sql);
 			if($db2->num_rows()){
-				extract($sel[0]);				
+				if (is_array($sel) && isset($sel[0]) && is_array($sel[0])) {
+				extract($sel[0]);	
+				}			
 			}
 			//echo $$right;
 			return $$right;

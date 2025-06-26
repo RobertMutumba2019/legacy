@@ -117,7 +117,9 @@ $db = new Db();
 $select = $db->select("SELECT user_forgot_password FROM sysuser WHERE user_id='$user_id'");
 
 if($db->num_rows()){
+	if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 	extract($select[0]);
+	}
 	if($user_forgot_password){		
 
 		if( portion(2) == "logout"){

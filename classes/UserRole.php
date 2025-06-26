@@ -1,15 +1,18 @@
 <?php
+
+include_once __DIR__ . "/Exporter.inc";
 Class UserRole extends BeforeAndAfter{
 	public $page = "USER ROLE";
 	
 	public function __construct(){
-		$access = new AccessRights();
+		new AccessRights();
 		//$access->pageAccess(user_id(), $this->page, 'V');
 	}
 	
 	public static function getLinks(){
 		$page = "USER ROLE";
-		$links = array(
+		
+		return array(
 			array(
 				"link_name"=>"Add User Role", 
 				"link_address"=>"user-role/add-user-role",
@@ -32,8 +35,6 @@ Class UserRole extends BeforeAndAfter{
 				"link_right"=>"V",
 			)
 		);
-		
-		return $links;
 	}
 	
 	public function deleteUserRoleAction(){
@@ -58,12 +59,12 @@ Class UserRole extends BeforeAndAfter{
 
 					if($count == 1){
 						//checking template
-						if($col_1 != $valid_name){
+						if($col_1 !== $valid_name){
 							$errors[] = "Invalid Template";
 						}
 					}else{
 						//checking if there is not empty field
-						if(empty($col_1)){
+						if($col_1 === '' || $col_1 === '0'){
 							$errors[] = "Cell <b>A".$count."</b> should not be empty";
 						}
 
@@ -78,7 +79,7 @@ Class UserRole extends BeforeAndAfter{
 				}
 				fclose($file);
 
-				if(empty($errors)){
+				if($errors === []){
 					$db = new Db();
 
 					$file = fopen($filename, "r");
@@ -138,7 +139,7 @@ Class UserRole extends BeforeAndAfter{
 				$errors[]="User role($user_role) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 							
 				$db = new Db();
 				$insert = $db->insert("user_role", ["ur_name"=>$designation, "ur_added_by"=>$user_id, "ur_date_added"=>$time]);
@@ -203,7 +204,7 @@ Class UserRole extends BeforeAndAfter{
 				$errors[]="User Role ($user_role) already exists";
 			}
 			
-			if(empty($errors)){
+			if($errors === []){
 				$db = new Db();
 
 				$insert = $db->update("user_role", ["ur_name"=>$designation, "ur_added_by"=>$user_id, "ur_date_added"=>$time], ["ur_id"=>$id]);
@@ -294,10 +295,12 @@ Class UserRole extends BeforeAndAfter{
 					if($access->sectionAccess(user_id(), $this->page, 'E') || $access->sectionAccess(user_id(), $this->page, 'D')){
 					
 						echo '<td>';
-						if($access->sectionAccess(user_id(), $this->page, 'E'))
-							echo $this->action('edit','user-role/edit-user-role/'.$ur_id, 'Edit');
-						if($access->sectionAccess(user_id(), $this->page, 'D'))
-							echo $this->action('delete','user-role/delete-designation/'.$ur_id, 'Delete');
+						if ($access->sectionAccess(user_id(), $this->page, 'E')) {
+                            echo $this->action('edit','user-role/edit-user-role/'.$ur_id, 'Edit');
+                        }
+						if ($access->sectionAccess(user_id(), $this->page, 'D')) {
+                            echo $this->action('delete','user-role/delete-designation/'.$ur_id, 'Delete');
+                        }
 						echo '</td>';
 					}
 					echo '</tr>';

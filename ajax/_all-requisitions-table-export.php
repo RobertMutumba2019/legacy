@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 
@@ -114,6 +114,9 @@ echo '<table class="code-eagle-table" cellspacing="0" cellpadding="2" border="1"
 	echo '<tbody>';	
 	$start = ($start)?$start:1;			
 	$i = ($eagleActivePage-1)*$rowsPerPage;
+	if(is_array($select)){
+
+	
 	foreach($select as $row){
 		$i = $i++;
 		$i++;
@@ -135,6 +138,9 @@ echo '<table class="code-eagle-table" cellspacing="0" cellpadding="2" border="1"
            
             $vv = $vw->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
             $non =1;
+			if(is_array($vv)){
+
+			
             foreach($vv as $r){
                 extract($r);
                 $color = "";//($non%2==0)?"blue":"black";
@@ -156,11 +162,11 @@ echo '<table class="code-eagle-table" cellspacing="0" cellpadding="2" border="1"
                 //echo '<td>'.$ri_price.'</td>';
                 echo '</tr>';
             }
-
+		}
             $non++;
 
             //echo '</table>';
-            
+	}   
 		}
 
 		

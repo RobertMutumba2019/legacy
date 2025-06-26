@@ -1,5 +1,5 @@
 <?php 
-include __DIR__ . "/../classes/init.inc";
+include_once __DIR__ . "/classes/init.php";	
 error_reporting(null);
 $user_id = $_SESSION['CENTENARY_USER_ID'];
 
@@ -16,6 +16,8 @@ $push = array();
    $sqlu = "SELECT * FROM requisition WHERE req_id = '$id'";
                     $sel = $db->select($sqlu);                    
                     $db = new Db();
+
+                    if (is_array($sel) && isset($sel[0]) && is_array($sel[0])) {
                     foreach($sel as $row){
                         extract($row);
                         $v = new Db(); 
@@ -25,6 +27,9 @@ $p = 0;
 
 $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
 $non =1;
+if(is_array($vv)){
+
+
 foreach($vv as $r){
     extract($r);
     $p++;
@@ -32,6 +37,8 @@ $p1 = $p;
 $p = str_pad($p, 2, "0", STR_PAD_LEFT);
 $req_date_added = time();//+24*60*60;
 $str .= "<MovementOrderLine><AccountCode></AccountCode><DemandQuantity>$ri_quantity</DemandQuantity><Description></Description><FromLocationIdentifier>L01</FromLocationIdentifier><ItemCode>".trim($ri_code)."</ItemCode><LineNumber></LineNumber><OrderDate>".date('dmY',$req_date_added)."</OrderDate><TransactionPeriod></TransactionPeriod><UnitOfMovement></UnitOfMovement><UserLineNumber>".$p1."</UserLineNumber><AnalysisQuantity><Analysis><VMolCatAnalysis_AnlCode>".$t->rgf("approval_matrix", $req_division, "ap_id","ap_code")."</VMolCatAnalysis_AnlCode></Analysis></AnalysisQuantity><VLAB1><Base><VMolVlabEntry_Val>$ri_quantity</VMolVlabEntry_Val></Base></VLAB1></MovementOrderLine>";
+}
+}
 }
 
 $str .= "</MovementOrder></Payload></SSC>";
@@ -81,8 +88,6 @@ if($push !== []){
 }else{
 	$message = array("message"=>"Error", "details"=>"Unknown Error");
 }
-
-
 
 
 echo json_encode($message);
