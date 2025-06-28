@@ -153,7 +153,9 @@ Class PendingApprovals extends BeforeAndAfter{
 
 		$select = $db->select($sql);
 
+        if(is_array($select)){
 
+		
 		foreach($select as $row){
 			extract($row); 
 				
@@ -164,7 +166,8 @@ Class PendingApprovals extends BeforeAndAfter{
 					$num++;
 				}
 			}	
-			
+		
+		}
 		}
 		
 		return $num;
@@ -225,8 +228,9 @@ Class PendingApprovals extends BeforeAndAfter{
 		
 		if($db->num_rows()==0){
 			return 0;			
-		}else{			
-			extract($select[0]);
+		}else{		
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {	
+			extract($select[0]);}
 			return $app_id;			
 		}
 		

@@ -476,6 +476,10 @@ $xml = array();
                     $sqlu = "SELECT * FROM requisition WHERE req_id = '$ss'";
                     $sel = $db->select($sqlu);                    
                     $db = new Db();
+
+                    if(is_array($sel)){
+
+                    
                     foreach($sel as $row){
                         extract($row);
                         $v = new Db(); 
@@ -485,6 +489,9 @@ $p = 0;
 
 $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
 $non =1;
+if(is_array($vv)){
+
+
 foreach($vv as $r){
     extract($r);
     $p++;
@@ -492,6 +499,7 @@ $p1 = $p;
 $p = str_pad($p, 2, "0", STR_PAD_LEFT);
 $req_date_added = time();//+24*60*60;
 $str .= "<MovementOrderLine><AccountCode></AccountCode><DemandQuantity>$ri_quantity</DemandQuantity><Description></Description><FromLocationIdentifier>L01</FromLocationIdentifier><ItemCode>".trim($ri_code)."</ItemCode><LineNumber></LineNumber><OrderDate>".date('dmY',$req_date_added)."</OrderDate><TransactionPeriod></TransactionPeriod><UnitOfMovement></UnitOfMovement><UserLineNumber>".$p1."</UserLineNumber><AnalysisQuantity><Analysis><VMolCatAnalysis_AnlCode>".$this->rgf("approval_matrix", $req_division, "ap_id","ap_code")."</VMolCatAnalysis_AnlCode></Analysis></AnalysisQuantity><VLAB1><Base><VMolVlabEntry_Val>$ri_quantity</VMolVlabEntry_Val></Base></VLAB1></MovementOrderLine>";
+}
 }
 
 $str .= "</MovementOrder></Payload></SSC>";
@@ -502,6 +510,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                     }           
                 }
             }
+        }
 
             // echo '<pre>';
             // print_r($xml);
@@ -553,6 +562,10 @@ $str .= "</MovementOrder></Payload></SSC>";
         echo '</tr>';
         $no=1;
         $non = 1;
+
+        if(is_array($select)){
+
+        
         foreach($select as $row){
             extract($row);
             $v = new Db();
@@ -604,6 +617,10 @@ $str .= "</MovementOrder></Payload></SSC>";
             echo '</tr>';
             $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
             $non =1;
+
+            if(is_array($vv)){
+
+            
             foreach($vv as $r){
                 extract($r);
                 $color = "";//($non%2==0)?"blue":"black";
@@ -617,6 +634,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                 //echo '<td>'.$ri_price.'</td>';
                 echo '</tr>';
             }
+            }
 
             $non++;
 
@@ -624,6 +642,7 @@ $str .= "</MovementOrder></Payload></SSC>";
             echo '</div>';
             echo '</td>';
             echo '</tr>';
+        }
         }
         //echo '</table>';
 
@@ -931,6 +950,10 @@ $xml = array();
                     $sqlu = "SELECT * FROM requisition WHERE req_id = '$ss'";
                     $sel = $db->select($sqlu);                    
                     $db = new Db();
+
+                    if(is_array($sel)){
+
+                    
                     foreach($sel as $row){
                         extract($row);
                         $v = new Db(); 
@@ -940,6 +963,9 @@ $p = 0;
 
 $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
 $non =1;
+if(is_array($vv)){
+
+
 foreach($vv as $r){
     extract($r);
     $p++;
@@ -947,6 +973,7 @@ $p1 = $p;
 $p = str_pad($p, 2, "0", STR_PAD_LEFT);
 $req_date_added = time()+24*60*60;
 $str .= "<MovementOrderLine><AccountCode></AccountCode><DemandQuantity>$ri_quantity</DemandQuantity><Description></Description><FromLocationIdentifier>L".($p)."</FromLocationIdentifier><ItemCode>1101154</ItemCode><LineNumber></LineNumber><OrderDate>".date('dmY',$req_date_added)."</OrderDate><TransactionPeriod></TransactionPeriod><UnitOfMovement></UnitOfMovement><UserLineNumber>".$p1."</UserLineNumber><Analysis2><VMolCatAnalysis_AnlCode></VMolCatAnalysis_AnlCode></Analysis2><VLAB1><Base><VMolVlabEntry_Val>$ri_quantity</VMolVlabEntry_Val></Base></VLAB1></MovementOrderLine>";
+}
 }
 
 $str .= "</MovementOrder></Payload></SSC>";
@@ -957,7 +984,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                     }           
                 }
             }
-
+        }
             //echo '<pre>';
             //print_r($xml);
             //echo '</pre>';
@@ -991,6 +1018,10 @@ $str .= "</MovementOrder></Payload></SSC>";
         echo '</tr>';
         $no=1;
         $non = 1;
+
+        if(is_array($select)){
+
+        
         foreach($select as $row){
             extract($row);
             $v = new Db();
@@ -1033,6 +1064,9 @@ $str .= "</MovementOrder></Payload></SSC>";
             echo '</tr>';
             $vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
             $non =1;
+            if(is_array($vv)){
+
+            
             foreach($vv as $r){
                 extract($r);
                 $color = "";//($non%2==0)?"blue":"black";
@@ -1046,6 +1080,7 @@ $str .= "</MovementOrder></Payload></SSC>";
                 //echo '<td>'.$ri_price.'</td>';
                 echo '</tr>';
             }
+        }
 
             $non++;
 
@@ -1054,6 +1089,8 @@ $str .= "</MovementOrder></Payload></SSC>";
             echo '</td>';
             echo '</tr>';
         }
+
+    }
         //echo '</table>';
 
 
@@ -1096,6 +1133,7 @@ $str .= "</MovementOrder></Payload></SSC>";
             }
             
         }
+
 
         echo '</form>';
 

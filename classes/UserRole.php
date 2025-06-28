@@ -188,7 +188,9 @@ Class UserRole extends BeforeAndAfter{
 		$id=portion(3);
 		$db=new Db();
 		$select=$db->select("select * from user_role WHERE ur_id ='$id'");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0]);
+	}
 		if(isset($_POST['submit'])){
 		
 			$designation = $_POST['designation'];

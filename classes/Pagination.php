@@ -22,6 +22,7 @@ Class Pagination{
         }
 
         $this->searchColumns = $searchColumns;
+    
         foreach($searchColumns as $fts=>$v){
             $s[] = "$fts LIKE '%$searchWord%'";
             foreach($searchwords as $sw){

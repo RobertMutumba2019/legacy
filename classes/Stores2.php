@@ -270,11 +270,16 @@ Class Stores extends BeforeAndAfter{
 		$no=1;
 		$non = 1;
         if($db->num_rows()){
+			if(is_array($select)){
+
+			
     		foreach($select as $row){
     			extract($row);
     			$v = new Db();
     			$vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
-    			foreach($vv as $r){
+    			
+				if(is_array($vv)){
+				foreach($vv as $r){
     				extract($r);
     				$color = ($non%2==0)?"blue":"black";
     				echo '<tr style="color:'.$color.'">';
@@ -295,9 +300,11 @@ Class Stores extends BeforeAndAfter{
     				echo '<td>'.$this->full_name($req_app1_user_id).'</td>';
     				echo '</tr>';
     			}
+			}
 
     			$non++;
     		}
+		}
         }
 		//echo '</table>';
 
@@ -577,10 +584,14 @@ Class Stores extends BeforeAndAfter{
 		echo '<th>Approved By</th>';
 		echo '</tr>';
 		$no=1;
+
+		if(is_array($select)){
 		foreach($select as $row){
 			extract($row);
 			$v = new Db();
 			$vv = $v->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
+			
+			if(is_array($vv)){
 			foreach($vv as $r){
 				extract($r);
 				echo '<tr>';
@@ -597,6 +608,8 @@ Class Stores extends BeforeAndAfter{
 				echo '</tr>';
 			}
 		}
+		}
+	}
 
 		if(!$db->num_rows()){
 			echo '<tr><td colspan="10" style="font-weight:bold;"><center>No Data</center></td></tr>';

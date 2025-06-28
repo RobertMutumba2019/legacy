@@ -661,7 +661,10 @@ Class Requisition extends BeforeAndAfter{
 		$sel = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref'");
 		$lll = $db->num_rows();
 		$i = 0;
-		if(is_array($sel){
+	
+
+		
+		if(is_array($sel)){
 
 		
 		foreach($sel as $row){
@@ -673,7 +676,8 @@ Class Requisition extends BeforeAndAfter{
 			${"item_description".$i} = $ri_description;
 			$i++;
 		}
-		}		
+	}
+	
 
 		$title = $req_title;
 		$division = $req_division;
@@ -838,10 +842,15 @@ Class Requisition extends BeforeAndAfter{
 						
 						$users_emails = array();
 						//print_r($select);
+
+						if(is_array($select)){
+
+						
 						foreach($select as $row){
 							extract($row);
 							$users_emails[]=$user_email;
 						}
+					}
 
 						
 						// if($activeDelegate){
@@ -937,6 +946,10 @@ Class Requisition extends BeforeAndAfter{
 							<?php 
 							$db = new Db();
 							$select = $db->select("SELECT * FROM approval_matrix ORDER BY ap_unit_code ASC");
+							
+							if(is_array($select)){
+
+							
 							foreach($select as $row){
 								extract($row);
 								if ($division == $ap_id) {
@@ -944,6 +957,8 @@ Class Requisition extends BeforeAndAfter{
                                 } else {
                                     echo '<option value="'.$ap_id.'">'.$ap_unit_code.' - '.$ap_code.'</option>';
                                 }
+							
+							}
 							}
 							?>
 						</select>
@@ -1096,6 +1111,10 @@ Class Requisition extends BeforeAndAfter{
 									echo 'There are no attachments';
 								}else{
 									echo '<ol class="attachment-list">';
+
+									if(is_array($select)){
+
+									
 									foreach($select as $row){
 										extract($row);
 										echo '<li id="list'.$at_id.'">';
@@ -1104,6 +1123,8 @@ Class Requisition extends BeforeAndAfter{
 										echo '<a href="'.$at_path.'" target="_blank">'.$at_name.'</a>';
 										
 										echo '</li>';
+
+									}
 									}
 									echo '</ol>';
 								}
@@ -1663,6 +1684,10 @@ Class Requisition extends BeforeAndAfter{
 		echo '<th>Status</th>';
 		echo '<th>Action</th>';
 		echo '</tr>';
+
+		if(is_array($select)){
+
+		
 		foreach($select as $row){
 			extract($row);
 			echo '<tr>';
@@ -1684,7 +1709,9 @@ Class Requisition extends BeforeAndAfter{
 			}
 
 			echo '<td><a href="'.return_url().'requisition/view-requisition/'.$req_number.'">View Details</a></td>';
+		
 			echo '</tr>';
+		}
 		}
 		echo '</table>';
 		}else{
@@ -1796,6 +1823,10 @@ Class Requisition extends BeforeAndAfter{
                 $select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
                 $no = 1;
                 $total = 0;
+
+				if(is_array($select)){
+
+				
                 foreach($select as $row){
     				extract($row);
     				$list[]=array(
@@ -1807,7 +1838,8 @@ Class Requisition extends BeforeAndAfter{
     					$this->rgf("approval_matrix", $req_division, "ap_id", "ap_code"),
     					$req_number,
     				);
-    			}
+				}
+				}
                 $fp = fopen('StoreRequisitions/'.$req_number.'.csv', 'w');
                 foreach ($list as $fields) {
 					fputcsv($fp, $fields);
@@ -1935,6 +1967,10 @@ Class Requisition extends BeforeAndAfter{
             $select = $db->select("SELECT * FROM requisition_item WHERE ri_ref = '$req_ref' ORDER BY ri_date_added ASC");
             $no = 1;
             $total = 0;
+
+			if(is_array($select)){
+
+			
             foreach($select as $row){
             	extract($row);
             echo '<tr style="font-size:10px;  font-family:arial">';
@@ -1959,6 +1995,7 @@ Class Requisition extends BeforeAndAfter{
                    
             echo '</tr>';
         }
+	}
             
          
         echo '</table>';
@@ -2067,10 +2104,14 @@ Class Requisition extends BeforeAndAfter{
         if($db->num_rows()){
         	echo '<b>Attachments:</b>';
         	echo '<ol>';
+			if(is_array($select)){
+
+			
         	foreach($select as $row){
         		extract($row);
         		echo '<li><a href="'.$at_path.'" target="_blank">'.$at_name.'</a></li>';
-        	}
+			}
+			}
         	echo '</ol>';
         }
         echo '</div>';
@@ -2087,6 +2128,10 @@ Class Requisition extends BeforeAndAfter{
 			$i=1;
 			echo '<div style="padding-bottom:15px;" class="panel panel-success">';
 			echo '<ol style="color:#000;list-style:none;padding:0; margin:0;">';
+			
+			if(is_array($xx)){
+
+			
 			foreach($xx as $row){
 				if ($db->num_rows()) {
                     extract($row);
@@ -2117,6 +2162,8 @@ Class Requisition extends BeforeAndAfter{
 						echo '<br/>';
 						echo '</div>';
 					}
+			
+				}
 			}
 			echo '</ol>';
 			echo '</div>';
@@ -2136,6 +2183,10 @@ Class Requisition extends BeforeAndAfter{
 		
 		echo '<ol style="list-style:none;margin:0;padding:0;">';
 		$i = 0;
+
+		if(is_array($tt)){
+
+		
 
 		foreach($tt as $ttt){
 			extract($ttt);
@@ -2233,10 +2284,14 @@ Class Requisition extends BeforeAndAfter{
 						if ($db->num_rows()) {
                         echo '<br/><b>Comment:</b><br/>';
                     }
-						foreach($select1 as $row){
+						if(is_array($select)){
+
+						
+					    foreach($select1 as $row){
 							extract($row);
 							echo nl2br($comment_message);
 							echo '<br/>';
+						}
 						}
 						echo '</div>';	
 						
@@ -2244,6 +2299,7 @@ Class Requisition extends BeforeAndAfter{
 
 				echo '<div class="clearfix"></div>';
 
+				}
 			}
 		}
 		echo '</ol>';
@@ -2260,7 +2316,9 @@ Class Requisition extends BeforeAndAfter{
 			$number2 = (int)portion(3);
 			$number = portion(3);
 			$select = $db->select("SELECT req_number, req_id FROM requisition WHERE req_number = '$number' OR req_id = '$number2'");
+			if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 			extract($select[0]);
+			}
 			echo '<a href="'.return_url().'requisition/view-requisition/'.$req_id.'" class="eagle-load btn btn-xs btn-primary">View Requisition: '.$req_number.'</a>';
 		}
 	}
@@ -2300,7 +2358,9 @@ Class Requisition extends BeforeAndAfter{
 
 		$select = $db->select("SELECT req_division, req_number, req_app1_user_id, req_id,req_added_by, req_delegate1, req_date_added FROM requisition WHERE req_status = 1 AND req_date_added > ".MONTHS_ACTIVE);
 
+        if(is_array($select)){
 
+		
 		foreach($select as $row){
 			extract($row); 
 				
@@ -2312,6 +2372,7 @@ Class Requisition extends BeforeAndAfter{
 				}
 			}	
 			
+		}
 		}
 		
 		return $num;

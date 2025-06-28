@@ -535,6 +535,9 @@ class Users extends BeforeAndAfter{
 
 
 <?php
+
+use AccessRights;
+
 	}
 
 	public function addUserAction(){
@@ -1238,6 +1241,9 @@ class Users extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT branch_id, branch_name FROM branch WHERE branch_status = 1 ORDER BY branch_name ASC");
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												if ($branch_id == $user_branch_id) {
@@ -1246,6 +1252,7 @@ class Users extends BeforeAndAfter{
                                                     echo '<option data-subtext="'.$branch_name.'" value="'.$branch_id.'">'.$branch_name.'</option>';
                                                 }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -1261,6 +1268,9 @@ class Users extends BeforeAndAfter{
 													<?php
 													$db = new Db();
 													$select = $db->select("SELECT dept_id, dept_name FROM department WHERE dept_name IS NOT NULL AND dept_status = 1 ORDER BY dept_name ASC");
+													
+													if(is_array($select)){
+
 													foreach($select as $row){
 														extract($row);
 														if ($dept_id == $user_department_id) {
@@ -1269,6 +1279,7 @@ class Users extends BeforeAndAfter{
                                                             echo '<option data-subtext="" value="'.$dept_id.'">'.$dept_name.'</option>';
                                                         }
 													}
+												}
 													?>
 												</select>
 											</div>
@@ -1288,7 +1299,9 @@ class Users extends BeforeAndAfter{
 
 											$select = $db->select("SELECT designation_id, designation_name FROM designation ORDER BY designation_name ASC");
 											
-											if($db->num_rows()){												
+											if($db->num_rows()){	
+												if(is_array($select)){
+											
 												foreach($select as $row){
 												extract($row);	
 													if($user_designation1212 == $designation_id){
@@ -1298,6 +1311,7 @@ class Users extends BeforeAndAfter{
 													}													
 												}
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -1380,14 +1394,22 @@ class Users extends BeforeAndAfter{
 											$dept_ids = array();
 											$user_ids = array();
 											$select = $db->select("SELECT * FROM hod");
+
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$dept_ids[] = $hod_dept_id;
 												$user_ids[] = $hod_user_id;
+											
+											}
 											}
 											
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department ORDER BY dept_name ASC");
+											
+											if(is_array($select)){
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($dept_id, $dept_ids)){
@@ -1397,6 +1419,7 @@ class Users extends BeforeAndAfter{
                                                         echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
                                                     }
 												}
+											}
 											}
 											?>
 										</select>
@@ -1411,6 +1434,10 @@ class Users extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT user_surname, user_othername, user_id FROM sysuser WHERE user_designation = 15 ORDER BY user_surname ASC");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($user_id, $user_ids)){
@@ -1421,6 +1448,7 @@ class Users extends BeforeAndAfter{
                                                     }
 												}
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -1501,14 +1529,22 @@ class Users extends BeforeAndAfter{
 											$dept_ids = array();
 											$user_ids = array();
 											$select = $db->select("SELECT * FROM hod");
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												$dept_ids[] = $hod_dept_id;
 												$user_ids[] = $hod_user_id;
 											}
+											}
 											
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department ORDER BY dept_name ASC");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($dept_id, $dept_ids)){
@@ -1519,6 +1555,7 @@ class Users extends BeforeAndAfter{
                                                     }
 												}
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -1532,6 +1569,10 @@ class Users extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT user_surname, user_othername, user_id FROM sysuser WHERE user_designation = 15 ORDER BY user_surname ASC");
+											
+											if(is_array($select)){
+
+											
 											foreach($select as $row){
 												extract($row);
 												if(!in_array($user_id, $user_ids)){
@@ -1541,6 +1582,7 @@ class Users extends BeforeAndAfter{
                                                         echo '<option value="'.$user_id.'">'.$user_surname.' '.$user_othername.' </option>';
                                                     }
 												}
+											}
 											}
 											?>
 										</select>
@@ -1592,6 +1634,10 @@ class Users extends BeforeAndAfter{
 				
 				$i=1;
 				echo '<tbody>';
+
+				if(is_array($select)){
+
+				
 				foreach($select as $row){
 					extract($row);
 					echo '<tr>';
@@ -1611,6 +1657,7 @@ class Users extends BeforeAndAfter{
 						number_format($this->total("sysuser", "user_department_id", $user_department_id))
 					
 					); 
+				}
 				}
 				echo '</tbody>';
 				

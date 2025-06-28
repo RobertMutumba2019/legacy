@@ -24,7 +24,9 @@ class Settings extends BeforeAndAfter{
 		$db = new Db();
 		
 		$select = $db->select("select * from settings_vehicle_fuel WHERE settings_id = 1");
+		if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 		extract($select[0][0]);
+		}
 		/*echo '<pre>';
 		print_r($select[0]);
 		echo '</pre>';*/
@@ -159,6 +161,7 @@ class Settings extends BeforeAndAfter{
 		
 
 	}
+
 		
 	
 	public function fuelSettingsAction(){
@@ -300,6 +303,8 @@ class Settings extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT branch_id, branch_name FROM branch ORDER BY branch_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
 												if ($branch_id == $user_branch_id) {
@@ -307,6 +312,7 @@ class Settings extends BeforeAndAfter{
                                                 } else {
                                                     echo '<option value="'.$branch_id.'">'.$branch_name.'</option>';
                                                 }
+											}
 											}
 											?>
 										</select>
@@ -322,6 +328,8 @@ class Settings extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT dept_id, dept_name FROM department ORDER BY dept_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
 												if ($dept_id == $department_id) {
@@ -330,6 +338,7 @@ class Settings extends BeforeAndAfter{
                                                     echo '<option value="'.$dept_id.'">'.$dept_name.'</option>';
                                                 }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -344,6 +353,8 @@ class Settings extends BeforeAndAfter{
 											<?php
 											$db = new Db();
 											$select = $db->select("SELECT section_id, section_name FROM section ORDER BY section_name ASC");
+											
+											if (is_array($select) && isset($select[0]) && is_array($select[0])) {
 											foreach($select[0] as $row){
 												extract($row);
 												if ($section_id == $user_section_id) {
@@ -352,6 +363,7 @@ class Settings extends BeforeAndAfter{
                                                     echo '<option value="'.$section_id.'">'.$section_name.'</option>';
                                                 }
 											}
+										}
 											?>
 										</select>
 									</div>
@@ -390,5 +402,4 @@ class Settings extends BeforeAndAfter{
 	}
 		
 }
-
 ?>
